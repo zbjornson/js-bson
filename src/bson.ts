@@ -1,28 +1,28 @@
-'use strict';
-
-const Buffer = require('buffer').Buffer;
-const Map = require('./map');
-const Long = require('./long');
-const Double = require('./double');
-const Timestamp = require('./timestamp');
-const ObjectId = require('./objectid');
-const BSONRegExp = require('./regexp');
-const BSONSymbol = require('./symbol');
-const Int32 = require('./int_32');
-const Code = require('./code');
-const Decimal128 = require('./decimal128');
-const MinKey = require('./min_key');
-const MaxKey = require('./max_key');
-const DBRef = require('./db_ref');
-const Binary = require('./binary');
-const constants = require('./constants');
-const EJSON = require('./extended_json');
+import 'buffer';
+import { Buffer } from 'buffer';
+import Long from './long';
+import Double from './double';
+import Timestamp from './timestamp';
+import ObjectId from './objectid';
+import BSONRegExp from './regexp';
+import BSONSymbol from './symbol';
+import Int32 from './int_32';
+import Code from './code';
+import MinKey from './min_key';
+import MaxKey from './max_key';
+import DBRef from './db_ref';
+import Binary from './binary'
+import Decimal128 from './decimal128';
+import * as constants from './constants';
+import * as EJSON from './extended_json';
 
 // Parts of the parser
-const internalDeserialize = require('./parser/deserializer');
-const internalSerialize = require('./parser/serializer');
-const internalCalculateObjectSize = require('./parser/calculate_size');
-const ensureBuffer = require('./ensure_buffer');
+import internalDeserialize from './parser/deserializer';
+import internalSerialize from './parser/serializer';
+import internalCalculateObjectSize from './parser/calculate_size';
+import ensureBuffer from './ensure_buffer';
+
+const Map = require('./map');
 
 /**
  * @ignore
@@ -39,7 +39,7 @@ let buffer = Buffer.alloc(MAXSIZE);
  * @method
  * @param {number} size The desired size for the internal serialization buffer
  */
-function setInternalBufferSize(size) {
+function setInternalBufferSize(size: number) {
   // Resize the internal serialization buffer if needed
   if (buffer.length < size) {
     buffer = Buffer.alloc(size);
@@ -55,7 +55,7 @@ function setInternalBufferSize(size) {
  * @param {Boolean} [options.ignoreUndefined=true] ignore undefined fields **(default:true)**.
  * @return {Buffer} returns the Buffer object containing the serialized object.
  */
-function serialize(object, options) {
+function serialize(object: any, options: any) {
   options = options || {};
   // Unpack the options
   const checkKeys = typeof options.checkKeys === 'boolean' ? options.checkKeys : false;
@@ -104,7 +104,7 @@ function serialize(object, options) {
  * @param {Number} [options.index] the index in the buffer where we wish to start serializing into.
  * @return {Number} returns the index pointing to the last written byte in the buffer.
  */
-function serializeWithBufferAndIndex(object, finalBuffer, options) {
+function serializeWithBufferAndIndex(object: any, finalBuffer: Buffer, options: any) {
   options = options || {};
   // Unpack the options
   const checkKeys = typeof options.checkKeys === 'boolean' ? options.checkKeys : false;
@@ -145,7 +145,7 @@ function serializeWithBufferAndIndex(object, finalBuffer, options) {
  * @param {boolean} [options.allowObjectSmallerThanBufferSize=false] allows the buffer to be larger than the parsed BSON object
  * @return {Object} returns the deserialized Javascript Object.
  */
-function deserialize(buffer, options) {
+function deserialize(buffer: Buffer, options: any) {
   buffer = ensureBuffer(buffer);
   return internalDeserialize(buffer, options);
 }
@@ -158,7 +158,7 @@ function deserialize(buffer, options) {
  * @param {Boolean} [options.ignoreUndefined=true] ignore undefined fields **(default:true)**.
  * @return {Number} returns the number of bytes the BSON object will take up.
  */
-function calculateObjectSize(object, options) {
+function calculateObjectSize(object: Buffer, options: any) {
   options = options || {};
 
   const serializeFunctions =
@@ -188,7 +188,7 @@ function calculateObjectSize(object, options) {
  * @param {Object} [options.bsonRegExp=false] return BSON regular expressions as BSONRegExp instances.
  * @return {Number} returns the next index in the buffer after deserialization **x** numbers of documents.
  */
-function deserializeStream(data, startIndex, numberOfDocuments, documents, docStartIndex, options) {
+function deserializeStream(data: Buffer, startIndex: number, numberOfDocuments: number, documents: any[], docStartIndex: number, options: any) {
   options = Object.assign({ allowObjectSmallerThanBufferSize: true }, options);
   data = ensureBuffer(data);
 

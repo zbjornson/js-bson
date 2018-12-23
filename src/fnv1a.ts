@@ -1,6 +1,5 @@
-'use strict';
-
-const Long = require('./long');
+import { Buffer } from 'buffer';
+import Long from './long';
 
 const MASK_8 = 0xff;
 const MASK_24 = 0xffffff;
@@ -16,7 +15,7 @@ const FNV_MASK = new Long(MASK_32, 0);
  * Algorithm can be found here: http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a
  * @ignore
  */
-function fnv1a32(input, encoding) {
+export function fnv1a32(input: string, encoding?: string) {
   encoding = encoding || 'utf8';
   const octets = Buffer.from(input, encoding);
 
@@ -35,7 +34,7 @@ function fnv1a32(input, encoding) {
  * http://www.isthe.com/chongo/tech/comp/fnv/#xor-fold
  * @ignore
  */
-function fnv1a24(input, encoding) {
+export function fnv1a24(input: string, encoding: string) {
   const _32bit = fnv1a32(input, encoding);
   const base = _32bit & MASK_24;
   const top = (_32bit >>> 24) & MASK_8;
@@ -43,5 +42,3 @@ function fnv1a24(input, encoding) {
 
   return final;
 }
-
-module.exports = { fnv1a24, fnv1a32 };

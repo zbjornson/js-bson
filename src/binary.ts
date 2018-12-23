@@ -1,9 +1,11 @@
 'use strict';
 
+import { Buffer } from 'buffer';
+
 /**
  * A class representation of the BSON Binary type.
  */
-class Binary {
+export default class Binary {
   /**
    * Create a Binary type
    *
@@ -19,7 +21,10 @@ class Binary {
    * @param {Number} [subType] the option binary type.
    * @return {Binary}
    */
-  constructor(buffer, subType) {
+  private sub_type: number;
+  private position: number;
+  private buffer: Buffer|Uint8Array|number[];
+  constructor(buffer: Buffer|Uint8Array|number[], subType?: number) {
     if (
       buffer != null &&
       !(typeof buffer === 'string') &&
@@ -54,7 +59,7 @@ class Binary {
       } else if (typeof Uint8Array !== 'undefined') {
         this.buffer = new Uint8Array(new ArrayBuffer(Binary.BUFFER_SIZE));
       } else {
-        this.buffer = new Array(Binary.BUFFER_SIZE);
+        this.buffer = new Array(Binary.BUFFER_SIZE) as number[];
       }
     }
   }
@@ -65,18 +70,18 @@ class Binary {
    * @method
    * @param {string} byte_value a single byte we wish to write.
    */
-  put(byte_value) {
+  put(byte_value: number|string) {
     // If it's a string and a has more than one character throw an error
-    if (byte_value['length'] != null && typeof byte_value !== 'number' && byte_value.length !== 1)
+    if (typeof byte_value !== 'number' && byte_value['length'] != null && byte_value.length !== 1)
       throw new TypeError('only accepts single character String, Uint8Array or Array');
-    if ((typeof byte_value !== 'number' && byte_value < 0) || byte_value > 255)
+    if ((typeof byte_value !== 'number' && +byte_value < 0) || +byte_value > 255)
       throw new TypeError('only accepts number in a valid unsigned byte range 0-255');
 
     // Decode the byte value once
     let decoded_byte = null;
     if (typeof byte_value === 'string') {
       decoded_byte = byte_value.charCodeAt(0);
-    } else if (byte_value['length'] != null) {
+    } else if (typeof byte_value !== 'number' && byte_value['length'] != null) {
       decoded_byte = byte_value[0];
     } else {
       decoded_byte = byte_value;
@@ -122,7 +127,7 @@ class Binary {
    * @param {number} offset specify the binary of where to write the content.
    * @return {null}
    */
-  write(string, offset) {
+  write(string: Buffer|string, offset: number|undefined) {
     offset = typeof offset === 'number' ? offset : this.position;
 
     // If the buffer is to small let's extend the buffer
@@ -142,6 +147,7 @@ class Binary {
       }
 
       // Assign the new buffer
+      // @ts-ignore
       this.buffer = buffer;
     }
 
@@ -155,6 +161,7 @@ class Binary {
       typeof string === 'string' &&
       Buffer.isBuffer(this.buffer)
     ) {
+      // @ts-ignore
       this.buffer.write(string, offset, 'binary');
       this.position =
         offset + string.length > this.position ? offset + string.length : this.position;
@@ -182,7 +189,7 @@ class Binary {
    * @param {number} length the number of bytes to read.
    * @return {Buffer}
    */
-  read(position, length) {
+  read(position: number, length?: number) {
     length = length && length > 0 ? length : this.position;
 
     // Let's return the data based on the type we have
@@ -209,7 +216,7 @@ class Binary {
    * @method
    * @return {string}
    */
-  value(asRaw) {
+  value(asRaw?: boolean) {
     asRaw = asRaw == null ? false : asRaw;
 
     // Optimize to serialize for the situation where the data == size of buffer
@@ -265,14 +272,14 @@ class Binary {
    * @ignore
    */
   toJSON() {
-    return this.buffer != null ? this.buffer.toString('base64') : '';
+    return this.buffer != null ? (this.buffer as Buffer).toString('base64') : '';
   }
 
   /**
    * @ignore
    */
-  toString(format) {
-    return this.buffer != null ? this.buffer.slice(0, this.position).toString(format) : '';
+  toString(format: string) {
+    return this.buffer != null ? (this.buffer as Buffer).slice(0, this.position).toString(format) : '';
   }
 
   /**
@@ -281,7 +288,7 @@ class Binary {
   toExtendedJSON() {
     const base64String = Buffer.isBuffer(this.buffer)
       ? this.buffer.toString('base64')
-      : Buffer.from(this.buffer).toString('base64');
+      : Buffer.from(this.buffer as number[]).toString('base64');
 
     const subType = Number(this.sub_type).toString(16);
     return {
@@ -295,11 +302,56 @@ class Binary {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     const type = doc.$binary.subType ? parseInt(doc.$binary.subType, 16) : 0;
     const data = new Buffer(doc.$binary.base64, 'base64');
     return new Binary(data, type);
   }
+
+  static BUFFER_SIZE = 256;
+  
+  /**
+   * Default BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_DEFAULT = 0;
+  /**
+   * Function BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_FUNCTION = 1;
+  /**
+   * Byte Array BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_BYTE_ARRAY = 2;
+  /**
+   * OLD UUID BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_UUID_OLD = 3;
+  /**
+   * UUID BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_UUID = 4;
+  /**
+   * MD5 BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_MD5 = 5;
+  /**
+   * User BSON type
+   *
+   * @classconstant SUBTYPE_DEFAULT
+   **/
+  static SUBTYPE_USER_DEFINED = 128;
 }
 
 /**
@@ -308,19 +360,19 @@ class Binary {
  */
 const BSON_BINARY_SUBTYPE_DEFAULT = 0;
 
-function isUint8Array(obj) {
+function isUint8Array(obj: any): obj is Uint8Array {
   return Object.prototype.toString.call(obj) === '[object Uint8Array]';
 }
 
 /**
  * @ignore
  */
-function writeStringToArray(data) {
+function writeStringToArray(data: string) {
   // Create a buffer
   const buffer =
     typeof Uint8Array !== 'undefined'
       ? new Uint8Array(new ArrayBuffer(data.length))
-      : new Array(data.length);
+      : new Array(data.length) as number[];
 
   // Write the content to the buffer
   for (let i = 0; i < data.length; i++) {
@@ -335,7 +387,7 @@ function writeStringToArray(data) {
  *
  * @ignore
  */
-function convertArraytoUtf8BinaryString(byteArray, startIndex, endIndex) {
+function convertArraytoUtf8BinaryString(byteArray: {[index: number]: number}, startIndex: number, endIndex: number) {
   let result = '';
   for (let i = startIndex; i < endIndex; i++) {
     result = result + String.fromCharCode(byteArray[i]);
@@ -344,50 +396,4 @@ function convertArraytoUtf8BinaryString(byteArray, startIndex, endIndex) {
   return result;
 }
 
-Binary.BUFFER_SIZE = 256;
-
-/**
- * Default BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_DEFAULT = 0;
-/**
- * Function BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_FUNCTION = 1;
-/**
- * Byte Array BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_BYTE_ARRAY = 2;
-/**
- * OLD UUID BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_UUID_OLD = 3;
-/**
- * UUID BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_UUID = 4;
-/**
- * MD5 BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_MD5 = 5;
-/**
- * User BSON type
- *
- * @classconstant SUBTYPE_DEFAULT
- **/
-Binary.SUBTYPE_USER_DEFINED = 128;
-
 Object.defineProperty(Binary.prototype, '_bsontype', { value: 'Binary' });
-module.exports = Binary;

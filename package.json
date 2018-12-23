@@ -44,7 +44,8 @@
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "standard-version": "^4.4.0"
+    "standard-version": "^4.4.0",
+    "typescript": "^3.2.2"
   },
   "config": {
     "native": false
@@ -64,13 +65,14 @@
     "test-node": "mocha ./test/node",
     "test-browser": "npm run-script build && karma start",
     "build": "rollup -c",
-    "lint": "eslint lib test",
+    "lint": "eslint test",
     "format": "prettier --print-width 100 --tab-width 2 --single-quote --write 'test/**/*.js' 'lib/**/*.js'",
     "coverage": "istanbul cover _mocha -- --recursive --ui tdd test/node",
     "prepublishOnly": "npm run build",
     "release": "standard-version -i HISTORY.md"
   },
   "dependencies": {
+    "@types/long": "^4.0.0",
     "buffer": "^5.1.0",
     "long": "^4.0.0"
   }

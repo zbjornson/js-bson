@@ -1,27 +1,25 @@
-'use strict';
-
-const Buffer = require('buffer').Buffer;
-const Long = require('../long');
-const Double = require('../double');
-const Timestamp = require('../timestamp');
-const ObjectId = require('../objectid');
-const BSONSymbol = require('../symbol');
-const BSONRegExp = require('../regexp');
-const Code = require('../code');
-const Decimal128 = require('../decimal128');
-const MinKey = require('../min_key');
-const MaxKey = require('../max_key');
-const DBRef = require('../db_ref');
-const Binary = require('../binary');
-const normalizedFunctionString = require('./utils').normalizedFunctionString;
-const constants = require('../constants');
+import { Buffer } from 'buffer';
+import Long from '../long';
+import Double from '../double';
+import Timestamp from '../timestamp';
+import ObjectId from '../objectid';
+import BSONSymbol from '../symbol';
+import BSONRegExp from '../regexp';
+import Code from '../code';
+import MinKey from '../min_key';
+import MaxKey from '../max_key';
+import DBRef from '../db_ref';
+import Binary from '../binary'
+import Decimal128 from '../decimal128';
+import { normalizedFunctionString } from './utils';
+import * as constants from '../constants';
 
 // To ensure that 0.4 of node works correctly
-function isDate(d) {
+function isDate(d: any): d is Date {
   return typeof d === 'object' && Object.prototype.toString.call(d) === '[object Date]';
 }
 
-function calculateObjectSize(object, serializeFunctions, ignoreUndefined) {
+export default function calculateObjectSize(object: any, serializeFunctions?: boolean, ignoreUndefined?: boolean) {
   let totalLength = 4 + 1;
 
   if (Array.isArray(object)) {
@@ -54,7 +52,7 @@ function calculateObjectSize(object, serializeFunctions, ignoreUndefined) {
  * @ignore
  * @api private
  */
-function calculateElement(name, value, serializeFunctions, isArray, ignoreUndefined) {
+function calculateElement(name: string, value: any, serializeFunctions?: boolean, isArray?: boolean, ignoreUndefined?: boolean) {
   // If we have toBSON defined, override the current object
   if (value && value.toBSON) {
     value = value.toBSON();
@@ -246,5 +244,3 @@ function calculateElement(name, value, serializeFunctions, isArray, ignoreUndefi
 
   return 0;
 }
-
-module.exports = calculateObjectSize;

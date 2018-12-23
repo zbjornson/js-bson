@@ -1,6 +1,6 @@
 'use strict';
 
-const Long = require('./long');
+import Long from './long';
 
 /**
  * @class
@@ -8,8 +8,12 @@ const Long = require('./long');
  * @param {number} high the high (signed) 32 bits of the Timestamp.
  * @return {Timestamp}
  */
-class Timestamp extends Long {
-  constructor(low, high) {
+export default class Timestamp extends Long {
+  readonly _bsontype!: { value: 'Timestamp' };
+
+  constructor(low: number, high: number);
+  constructor(low: Long)
+  constructor(low: number|Long, high?: number) {
     if (low instanceof Long) {
       super(low.low, low.high);
     } else {
@@ -36,7 +40,7 @@ class Timestamp extends Long {
    * @param {number} value the 32-bit integer in question.
    * @return {Timestamp} the timestamp.
    */
-  static fromInt(value) {
+  static fromInt(value: number) {
     return new Timestamp(Long.fromInt(value));
   }
 
@@ -47,7 +51,7 @@ class Timestamp extends Long {
    * @param {number} value the number in question.
    * @return {Timestamp} the timestamp.
    */
-  static fromNumber(value) {
+  static fromNumber(value: number) {
     return new Timestamp(Long.fromNumber(value));
   }
 
@@ -59,7 +63,7 @@ class Timestamp extends Long {
    * @param {number} highBits the high 32-bits.
    * @return {Timestamp} the timestamp.
    */
-  static fromBits(lowBits, highBits) {
+  static fromBits(lowBits: number, highBits: number) {
     return new Timestamp(lowBits, highBits);
   }
 
@@ -71,7 +75,7 @@ class Timestamp extends Long {
    * @param {number} [opt_radix] the radix in which the text is written.
    * @return {Timestamp} the timestamp.
    */
-  static fromString(str, opt_radix) {
+  static fromString(str: string, opt_radix: number) {
     return new Timestamp(Long.fromString(str, opt_radix));
   }
 
@@ -85,10 +89,9 @@ class Timestamp extends Long {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     return new Timestamp(doc.$timestamp.i, doc.$timestamp.t);
   }
 }
 
 Object.defineProperty(Timestamp.prototype, '_bsontype', { value: 'Timestamp' });
-module.exports = Timestamp;

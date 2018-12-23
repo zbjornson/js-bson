@@ -2,7 +2,9 @@
 /**
  * A class representation of the BSON MaxKey type.
  */
-class MaxKey {
+export default class MaxKey {
+  readonly _bsontype!: { value: 'MaxKey' };
+
   /**
    * Create a MaxKey type
    *
@@ -26,4 +28,3 @@ class MaxKey {
 }
 
 Object.defineProperty(MaxKey.prototype, '_bsontype', { value: 'MaxKey' });
-module.exports = MaxKey;

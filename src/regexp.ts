@@ -1,6 +1,4 @@
-'use strict';
-
-function alphabetize(str) {
+function alphabetize(str: string) {
   return str
     .split('')
     .sort()
@@ -10,14 +8,17 @@ function alphabetize(str) {
 /**
  * A class representation of the BSON RegExp type.
  */
-class BSONRegExp {
+export default class BSONRegExp {
   /**
    * Create a RegExp type
    *
    * @param {string} pattern The regular expression pattern to match
    * @param {string} options The regular expression options
    */
-  constructor(pattern, options) {
+  private pattern: string;
+  private options: string;
+  public _bsontype!: { value: 'BSONRegExp' };
+  constructor(pattern: string, options: string) {
     // Execute
     this.pattern = pattern || '';
     this.options = options ? alphabetize(options) : '';
@@ -49,7 +50,7 @@ class BSONRegExp {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     return new BSONRegExp(
       doc.$regularExpression.pattern,
       doc.$regularExpression.options

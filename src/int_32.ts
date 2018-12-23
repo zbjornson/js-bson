@@ -1,15 +1,16 @@
-'use strict';
 /**
  * A class representation of a BSON Int32 type.
  */
-class Int32 {
+export default class Int32 {
+  readonly _bsontype!: { value: 'Int32' };
+  value: number;
   /**
    * Create an Int32 type
    *
    * @param {number} value the number we want to represent as an int32.
    * @return {Int32}
    */
-  constructor(value) {
+  constructor(value: number) {
     this.value = value;
   }
 
@@ -33,7 +34,7 @@ class Int32 {
   /**
    * @ignore
    */
-  toExtendedJSON(options) {
+  toExtendedJSON(options: any) {
     if (options && options.relaxed) return this.value;
     return { $numberInt: this.value.toString() };
   }
@@ -41,10 +42,9 @@ class Int32 {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc, options) {
+  static fromExtendedJSON(doc: any, options: any) {
     return options && options.relaxed ? parseInt(doc.$numberInt, 10) : new Int32(doc.$numberInt);
   }
 }
 
 Object.defineProperty(Int32.prototype, '_bsontype', { value: 'Int32' });
-module.exports = Int32;

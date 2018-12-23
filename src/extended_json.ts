@@ -1,20 +1,18 @@
-'use strict';
+import { Buffer } from 'buffer';
 
-// const Buffer = require('buffer').Buffer;
-// const Map = require('./map');
-const Long = require('./long');
-const Double = require('./double');
-const Timestamp = require('./timestamp');
-const ObjectId = require('./objectid');
-const BSONRegExp = require('./regexp');
-const Symbol = require('./symbol');
-const Int32 = require('./int_32');
-const Code = require('./code');
-const Decimal128 = require('./decimal128');
-const MinKey = require('./min_key');
-const MaxKey = require('./max_key');
-const DBRef = require('./db_ref');
-const Binary = require('./binary');
+import Long from './long';
+import Double from './double';
+import Timestamp from './timestamp';
+import ObjectId from './objectid';
+import BSONRegExp from './regexp';
+import Symbol from './symbol';
+import Int32 from './int_32';
+import Code from './code';
+import MinKey from './min_key';
+import MaxKey from './max_key';
+import DBRef from './db_ref';
+import Binary from './binary';
+import Decimal128 from './decimal128';
 
 /**
  * @namespace EJSON
@@ -22,13 +20,23 @@ const Binary = require('./binary');
 
 // all the types where we don't need to do any special processing and can just pass the EJSON
 //straight to type.fromExtendedJSON
-const keysToCodecs = {
+
+interface CodecInstance {
+
+}
+interface Codec {
+  new(...args: any[]): CodecInstance;
+  fromExtendedJSON(value: any, options: any): CodecInstance;
+}
+
+const keysToCodecs: Record<string, Codec> = {
   $oid: ObjectId,
   $binary: Binary,
   $symbol: Symbol,
   $numberInt: Int32,
   $numberDecimal: Decimal128,
   $numberDouble: Double,
+  // @ts-ignore
   $numberLong: Long,
   $minKey: MinKey,
   $maxKey: MaxKey,
@@ -36,7 +44,7 @@ const keysToCodecs = {
   $timestamp: Timestamp
 };
 
-function deserializeValue(self, key, value, options) {
+function deserializeValue(self: any, key: string|null, value: any, options?: any) {
   if (typeof value === 'number') {
     if (options.relaxed) {
       return value;
@@ -46,7 +54,7 @@ function deserializeValue(self, key, value, options) {
     // that can represent it exactly. (if out of range, interpret as double.)
     if (Math.floor(value) === value) {
       if (value >= BSON_INT32_MIN && value <= BSON_INT32_MAX) return new Int32(value);
-      if (value >= BSON_INT64_MIN && value <= BSON_INT64_MAX) return new Long.fromNumber(value);
+      if (value >= BSON_INT64_MIN && value <= BSON_INT64_MAX) return Long.fromNumber(value);
     }
 
     // If the number is a non-integer or out of integer range, should interpret as BSON Double.
@@ -124,7 +132,7 @@ function deserializeValue(self, key, value, options) {
  * // prints { int32: 10 }
  * console.log(EJSON.parse(text));
  */
-function parse(text, options) {
+export function parse(this: any, text: string, options: any) {
   options = Object.assign({}, { relaxed: true }, options);
 
   // relaxed implies not strict
@@ -143,6 +151,9 @@ const BSON_INT32_MAX = 0x7fffffff,
   BSON_INT32_MIN = -0x80000000,
   BSON_INT64_MAX = 0x7fffffffffffffff,
   BSON_INT64_MIN = -0x8000000000000000;
+  
+type SecondArgument<T> = T extends (arg1: any, arg2: infer U, ...args: any[]) => any ? U : any;
+type ThirdArgument<T> = T extends (arg1: any, arg2: any, arg3: infer U, ...args: any[]) => any ? U : any;
 
 /**
  * Converts a BSON document to an Extended JSON string, optionally replacing values if a replacer
@@ -168,7 +179,7 @@ const BSON_INT32_MAX = 0x7fffffff,
  * // prints '{"int32":10}'
  * console.log(EJSON.stringify(doc));
  */
-function stringify(value, replacer, space, options) {
+export function stringify(value: any, replacer?: any, space?: any, options?: any) {
   if (space != null && typeof space === 'object') (options = space), (space = 0);
   if (replacer != null && typeof replacer === 'object')
     (options = replacer), (replacer = null), (space = 0);
@@ -189,7 +200,7 @@ function stringify(value, replacer, space, options) {
  * @param {object} [options] Optional settings passed to the `stringify` function
  * @return {object}
  */
-function serialize(bson, options) {
+export function serialize(bson: any, options?: any) {
   options = options || {};
   return JSON.parse(stringify(bson, options));
 }
@@ -202,22 +213,22 @@ function serialize(bson, options) {
  * @param {object} [options] Optional settings passed to the parse method
  * @return {object}
  */
-function deserialize(ejson, options) {
+export function deserialize(ejson: any, options?: any) {
   options = options || {};
   return parse(JSON.stringify(ejson), options);
 }
 
-function serializeArray(array, options) {
+function serializeArray(array: any[], options?: any): any[] {
   return array.map(v => serializeValue(v, options));
 }
 
-function getISOString(date) {
+function getISOString(date: Date) {
   const isoStr = date.toISOString();
   // we should only show milliseconds in timestamp if they're non-zero
   return date.getUTCMilliseconds() !== 0 ? isoStr : isoStr.slice(0, -5) + 'Z';
 }
 
-function serializeValue(value, options) {
+function serializeValue(value: any, options: any) {
   if (Array.isArray(value)) return serializeArray(value, options);
 
   if (value === undefined) return null;
@@ -249,7 +260,7 @@ function serializeValue(value, options) {
   return value;
 }
 
-function serializeDocument(doc, options) {
+function serializeDocument(doc: any, options: any) {
   if (doc == null || typeof doc !== 'object') throw new Error('not an object instance');
 
   // the document itself is a BSON type
@@ -264,7 +275,7 @@ function serializeDocument(doc, options) {
   }
 
   // the document is an object with nested BSON types
-  const _doc = {};
+  const _doc: Record<string, any> = {};
   for (let name in doc) {
     let val = doc[name];
     if (Array.isArray(val)) {
@@ -286,7 +297,7 @@ function serializeDocument(doc, options) {
     if (val instanceof RegExp) {
       let flags = val.flags;
       if (flags === undefined) {
-        flags = val.toString().match(/[gimuy]*$/)[0];
+        flags = (val.toString().match(/[gimuy]*$/) || [])[0];
       }
 
       const rx = new BSONRegExp(val.source, flags);
@@ -296,10 +307,3 @@ function serializeDocument(doc, options) {
 
   return _doc;
 }
-
-module.exports = {
-  parse,
-  deserialize,
-  serialize,
-  stringify
-};

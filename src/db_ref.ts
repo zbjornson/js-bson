@@ -1,9 +1,15 @@
-'use strict';
+import ObjectId from './objectid';
 
 /**
  * A class representation of the BSON DBRef type.
  */
-class DBRef {
+export default class DBRef {
+  private collection: string;
+  private oid: ObjectId;
+  private db?: string;
+  private fields: any;
+  readonly _bsontype!: { value: 'DBRef' };
+
   /**
    * Create a DBRef type
    *
@@ -12,12 +18,12 @@ class DBRef {
    * @param {string} [db] optional db name, if omitted the reference is local to the current db.
    * @return {DBRef}
    */
-  constructor(collection, oid, db, fields) {
+  constructor(collection: string, oid: ObjectId, db?: string, fields?: any) {
     // check if namespace has been provided
     const parts = collection.split('.');
     if (parts.length === 2) {
-      db = parts.shift();
-      collection = parts.shift();
+      db = parts.shift() as string;
+      collection = parts.shift() as string;
     }
 
     this.collection = collection;
@@ -47,7 +53,7 @@ class DBRef {
    * @ignore
    */
   toExtendedJSON() {
-    let o = {
+    let o : {$ref: string, $id: ObjectId, $db?: string } = {
       $ref: this.collection,
       $id: this.oid
     };
@@ -60,7 +66,7 @@ class DBRef {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     var copy = Object.assign({}, doc);
     ['$ref', '$id', '$db'].forEach(k => delete copy[k]);
     return new DBRef(doc.$ref, doc.$id, doc.$db, copy);
@@ -68,4 +74,3 @@ class DBRef {
 }
 
 Object.defineProperty(DBRef.prototype, '_bsontype', { value: 'DBRef' });
-module.exports = DBRef;

@@ -1,20 +1,18 @@
-'use strict';
-
-const Buffer = require('buffer').Buffer;
-const Long = require('../long');
-const Double = require('../double');
-const Timestamp = require('../timestamp');
-const ObjectId = require('../objectid');
-const Code = require('../code');
-const MinKey = require('../min_key');
-const MaxKey = require('../max_key');
-const Decimal128 = require('../decimal128');
-const Int32 = require('../int_32');
-const DBRef = require('../db_ref');
-const BSONRegExp = require('../regexp');
-const Binary = require('../binary');
-const constants = require('../constants');
-const validateUtf8 = require('../validate_utf8').validateUtf8;
+import { Buffer } from 'buffer';
+import Long from '../long';
+import Double from '../double';
+import Timestamp from '../timestamp';
+import ObjectId from '../objectid';
+import Code from '../code';
+import MinKey from '../min_key';
+import MaxKey from '../max_key';
+import Int32 from '../int_32';
+import DBRef from '../db_ref';
+import BSONRegExp from '../regexp';
+import Binary from '../binary';
+import Decimal128 from '../decimal128';
+import * as constants from '../constants';
+import { validateUtf8 } from '../validate_utf8';
 
 // Internal long versions
 const JS_INT_MAX_LONG = Long.fromNumber(constants.JS_INT_MAX);
@@ -22,7 +20,7 @@ const JS_INT_MIN_LONG = Long.fromNumber(constants.JS_INT_MIN);
 
 const functionCache = {};
 
-function deserialize(buffer, options, isArray) {
+export default function deserialize(buffer: Buffer, options: any, isArray?: boolean) {
   options = options == null ? {} : options;
   const index = options && options.index ? options.index : 0;
   // Read the document size
@@ -58,10 +56,10 @@ function deserialize(buffer, options, isArray) {
   }
 
   // Start deserializtion
-  return deserializeObject(buffer, index, options, isArray);
+  return deserializeObject(buffer, index, options, isArray as boolean);
 }
 
-function deserializeObject(buffer, index, options, isArray) {
+function deserializeObject(buffer: Buffer, index: number, options: any, isArray: boolean) {
   const evalFunctions = options['evalFunctions'] == null ? false : options['evalFunctions'];
   const cacheFunctions = options['cacheFunctions'] == null ? false : options['cacheFunctions'];
   const cacheFunctionsCrc32 =
@@ -96,7 +94,7 @@ function deserializeObject(buffer, index, options, isArray) {
   if (size < 5 || size > buffer.length) throw new Error('corrupt bson message');
 
   // Create holding object
-  const object = isArray ? [] : {};
+  const object: any = isArray ? [] : {};
   // Used for arrays to skip having to perform utf8 decoding
   let arrayIndex = 0;
   let done = false;
@@ -257,6 +255,7 @@ function deserializeObject(buffer, index, options, isArray) {
       // Assign the new Decimal128 value
       const decimal128 = new Decimal128(bytes);
       // If we have an alternative mapper use that
+      // @ts-ignore
       object[name] = decimal128.toObject ? decimal128.toObject() : decimal128;
     } else if (elementType === constants.BSON_DATA_BINARY) {
       let binarySize =
@@ -452,7 +451,7 @@ function deserializeObject(buffer, index, options, isArray) {
       if (evalFunctions) {
         // If we have cache enabled let's look for the md5 of the function in the cache
         if (cacheFunctions) {
-          const hash = cacheFunctionsCrc32 ? crc32(functionString) : functionString;
+          const hash = functionString;
           // Got to do this to avoid V8 deoptimizing the call due to finding eval
           object[name] = isolateEvalWithHash(functionCache, hash, functionString, object);
         } else {
@@ -521,7 +520,7 @@ function deserializeObject(buffer, index, options, isArray) {
       if (evalFunctions) {
         // If we have cache enabled let's look for the md5 of the function in the cache
         if (cacheFunctions) {
-          const hash = cacheFunctionsCrc32 ? crc32(functionString) : functionString;
+          const hash = functionString;
           // Got to do this to avoid V8 deoptimizing the call due to finding eval
           object[name] = isolateEvalWithHash(functionCache, hash, functionString, object);
         } else {
@@ -608,7 +607,7 @@ function deserializeObject(buffer, index, options, isArray) {
  * @ignore
  * @api private
  */
-function isolateEvalWithHash(functionCache, hash, functionString, object) {
+function isolateEvalWithHash(functionCache: Record<string, any>, hash: string, functionString: string, object: any) {
   // Contains the value we are going to set
   let value = null;
 
@@ -628,12 +627,10 @@ function isolateEvalWithHash(functionCache, hash, functionString, object) {
  * @ignore
  * @api private
  */
-function isolateEval(functionString) {
+function isolateEval(functionString: string) {
   // Contains the value we are going to set
   let value = null;
   // Eval the function
   eval('value = ' + functionString);
   return value;
 }
-
-module.exports = deserialize;
