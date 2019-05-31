@@ -5,6 +5,7 @@
 .settings
 ./data
 node_modules/
+lib/
 
 output
 build
