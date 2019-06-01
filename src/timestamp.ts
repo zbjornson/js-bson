@@ -1,6 +1,6 @@
 'use strict';
 
-const Long = require('./long').Long;
+import { Long } from './long';
 
 /**
  * @class
@@ -8,12 +8,14 @@ const Long = require('./long').Long;
  * @param {number} high the high (signed) 32 bits of the Timestamp.
  * @return {Timestamp}
  */
-class Timestamp extends Long {
-  constructor(low, high) {
+export class Timestamp extends Long {
+  constructor(low: number, high: number)
+  constructor(low: Long);
+  constructor(low: number|Long, high?: number) {
     if (Long.isLong(low)) {
-      super(low.low, low.high, true);
+      super((low as Long).low, (low as Long).high, true);
     } else {
-      super(low, high, true);
+      super((low as number), high, true);
     }
   }
 
@@ -36,7 +38,7 @@ class Timestamp extends Long {
    * @param {number} value the 32-bit integer in question.
    * @return {Timestamp} the timestamp.
    */
-  static fromInt(value) {
+  static fromInt(value: number) {
     return new Timestamp(Long.fromInt(value, true));
   }
 
@@ -47,7 +49,7 @@ class Timestamp extends Long {
    * @param {number} value the number in question.
    * @return {Timestamp} the timestamp.
    */
-  static fromNumber(value) {
+  static fromNumber(value: number) {
     return new Timestamp(Long.fromNumber(value, true));
   }
 
@@ -59,7 +61,7 @@ class Timestamp extends Long {
    * @param {number} highBits the high 32-bits.
    * @return {Timestamp} the timestamp.
    */
-  static fromBits(lowBits, highBits) {
+  static fromBits(lowBits: number, highBits: number) {
     return new Timestamp(lowBits, highBits);
   }
 
@@ -71,8 +73,8 @@ class Timestamp extends Long {
    * @param {number} [opt_radix] the radix in which the text is written.
    * @return {Timestamp} the timestamp.
    */
-  static fromString(str, opt_radix) {
-    return new Timestamp(Long.fromString(str, opt_radix, true));
+  static fromString(str: string, opt_radix: number) {
+    return new Timestamp(Long.fromString(str, true, opt_radix));
   }
 
   /**
@@ -85,13 +87,11 @@ class Timestamp extends Long {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any): Timestamp {
     return new Timestamp(doc.$timestamp.i, doc.$timestamp.t);
   }
+
+  static MAX_VALUE = Long.MAX_UNSIGNED_VALUE;
 }
 
 Object.defineProperty(Timestamp.prototype, '_bsontype', { value: 'Timestamp' });
-
-Timestamp.MAX_VALUE = Timestamp.MAX_UNSIGNED_VALUE;
-
-module.exports = { Timestamp };

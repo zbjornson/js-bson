@@ -1,10 +1,9 @@
-'use strict';
-const Long = require('long');
+import * as Long from 'long';
 
 /**
  * @ignore
  */
-Long.prototype.toExtendedJSON = function(options) {
+Long.prototype.toExtendedJSON = function(this: Long, options: any) {
   if (options && options.relaxed) return this.toNumber();
   return { $numberLong: this.toString() };
 };
@@ -12,10 +11,11 @@ Long.prototype.toExtendedJSON = function(options) {
 /**
  * @ignore
  */
-Long.fromExtendedJSON = function(doc, options) {
+(Long.fromExtendedJSON as any) = function(doc: any, options: any) {
   const result = Long.fromString(doc.$numberLong);
   return options && options.relaxed ? result.toNumber() : result;
 };
 
 Object.defineProperty(Long.prototype, '_bsontype', { value: 'Long' });
-module.exports = { Long };
+
+export { Long };
