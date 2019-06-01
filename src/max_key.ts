@@ -2,6 +2,7 @@
  * A class representation of the BSON MaxKey type.
  */
 export class MaxKey {
+  readonly _bsontype: 'MaxKey'
   /**
    * Create a MaxKey type
    *

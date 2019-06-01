@@ -3,13 +3,14 @@
  * A class representation of the BSON Double type.
  */
 export class Double {
+  readonly _bsonvalue: 'Double';
   /**
    * Create a Double type
    *
    * @param {number} value the number we want to represent as a double.
    * @return {Double}
    */
-  constructor(private value: number) {
+  constructor(public value: number) {
     this.value = value;
   }
 

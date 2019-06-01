@@ -2,6 +2,7 @@
  * A class representation of the BSON MinKey type.
  */
 export class MinKey {
+  readonly _bsontype: 'MinKey';
   /**
    * Create a MinKey type
    *

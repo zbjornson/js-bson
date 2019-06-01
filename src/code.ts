@@ -2,6 +2,7 @@
  * A class representation of the BSON Code type.
  */
 export class Code {
+  readonly _bsonvalue: 'Code';
   /**
    * Create a Code type
    *

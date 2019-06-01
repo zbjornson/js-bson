@@ -57,7 +57,7 @@ export class ObjectId {
    * @ignore
    */
   static index = ~~(Math.random() * 0xffffff);
-  private id: Buffer|string;
+  public id: Buffer|string;
   private __id: string;
   /**
    * Create an ObjectId type

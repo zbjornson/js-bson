@@ -7,9 +7,10 @@ const Buffer = bufferModule.Buffer;
  * A class representation of the BSON Binary type.
  */
 export class Binary {
+  readonly _bsonvalue: 'Binary';
   public buffer: Buffer|Uint8Array|number[];
   public sub_type: number;
-  private position: number;
+  public position: number;
 
   private static BUFFER_SIZE = 256;
   /**
@@ -262,6 +263,8 @@ export class Binary {
    * @method
    * @return {string}
    */
+  value(asRaw: true): Buffer;
+  value(asRaw: false): string;
   value(asRaw?: boolean) {
     asRaw = asRaw == null ? false : asRaw;
 

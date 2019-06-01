@@ -3,6 +3,7 @@
  * A class representation of a BSON Int32 type.
  */
 export class Int32 {
+  readonly _bsonvalue: 'Int32';
   /**
    * Create an Int32 type
    *
@@ -19,7 +20,7 @@ export class Int32 {
    * @method
    * @return {number} returns the wrapped int32 number.
    */
-  valueOf() {
+  valueOf(): number {
     return this.value;
   }
 

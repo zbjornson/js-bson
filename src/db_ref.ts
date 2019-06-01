@@ -3,10 +3,11 @@ import { ObjectId } from './objectid';
  * A class representation of the BSON DBRef type.
  */
 export class DBRef {
+  readonly _bsonvalue: 'DBRef';
   public collection: string;
   public oid: ObjectId;
   public db?: string;
-  private fields: Record<string, any>;
+  public fields: Record<string, any>;
 
   /**
    * Create a DBRef type

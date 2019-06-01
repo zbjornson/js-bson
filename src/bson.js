@@ -19,8 +19,8 @@ const EJSON = require('./extended_json');
 
 // Parts of the parser
 const internalDeserialize = require('./parser/deserializer');
-const internalSerialize = require('./parser/serializer');
-const internalCalculateObjectSize = require('./parser/calculate_size');
+const internalSerialize = require('./parser/serializer').serializeInto;
+const internalCalculateObjectSize = require('./parser/calculate_size').calculateObjectSize;
 const ensureBuffer = require('./ensure_buffer').ensureBuffer;
 
 /**

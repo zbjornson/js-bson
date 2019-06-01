@@ -2,7 +2,8 @@
  * A class representation of the BSON Symbol type.
  */
 export class BSONSymbol {
-  private value: string;
+  readonly _bsonvalue: 'Symbol';
+  public value: string;
   /**
    * Create a Symbol type
    *
