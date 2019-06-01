@@ -1,16 +1,18 @@
 'use strict';
 
-const Buffer = require('buffer').Buffer;
-const Binary = require('../binary').Binary;
-const normalizedFunctionString = require('./utils').normalizedFunctionString;
-const constants = require('../constants');
+import * as BufferModule from 'buffer';
+const Buffer = BufferModule.Buffer;
+
+import { Binary } from '../binary';
+import { normalizedFunctionString } from './utils';
+import * as constants from '../constants';
 
 // To ensure that 0.4 of node works correctly
-function isDate(d) {
+function isDate(d: any): d is Date {
   return typeof d === 'object' && Object.prototype.toString.call(d) === '[object Date]';
 }
 
-function calculateObjectSize(object, serializeFunctions, ignoreUndefined) {
+export function calculateObjectSize(object: unknown, serializeFunctions: boolean, ignoreUndefined: boolean) {
   let totalLength = 4 + 1;
 
   if (Array.isArray(object)) {
@@ -26,13 +28,13 @@ function calculateObjectSize(object, serializeFunctions, ignoreUndefined) {
   } else {
     // If we have toBSON defined, override the current object
 
-    if (object.toBSON) {
-      object = object.toBSON();
+    if ((object as any).toBSON) {
+      object = (object as any).toBSON();
     }
 
     // Calculate size
-    for (let key in object) {
-      totalLength += calculateElement(key, object[key], serializeFunctions, false, ignoreUndefined);
+    for (let key in (object as any)) {
+      totalLength += calculateElement(key, (object as any)[key], serializeFunctions, false, ignoreUndefined);
     }
   }
 
@@ -43,10 +45,10 @@ function calculateObjectSize(object, serializeFunctions, ignoreUndefined) {
  * @ignore
  * @api private
  */
-function calculateElement(name, value, serializeFunctions, isArray, ignoreUndefined) {
+function calculateElement(name: string, value: any, serializeFunctions: boolean, isArray: boolean, ignoreUndefined: boolean) {
   // If we have toBSON defined, override the current object
-  if (value && value.toBSON) {
-    value = value.toBSON();
+  if (value && (value as any).toBSON) {
+    value = (value as any).toBSON();
   }
 
   switch (typeof value) {
@@ -75,7 +77,7 @@ function calculateElement(name, value, serializeFunctions, isArray, ignoreUndefi
     case 'boolean':
       return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + (1 + 1);
     case 'object':
-      if (value == null || value['_bsontype'] === 'MinKey' || value['_bsontype'] === 'MaxKey') {
+      if (value == null || (value as any)['_bsontype'] === 'MinKey' || value['_bsontype'] === 'MaxKey') {
         return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + 1;
       } else if (value['_bsontype'] === 'ObjectId' || value['_bsontype'] === 'ObjectID') {
         return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + (12 + 1);
@@ -226,5 +228,3 @@ function calculateElement(name, value, serializeFunctions, isArray, ignoreUndefi
 
   return 0;
 }
-
-module.exports = calculateObjectSize;
