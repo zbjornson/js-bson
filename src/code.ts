@@ -1,9 +1,7 @@
-'use strict';
-
 /**
  * A class representation of the BSON Code type.
  */
-class Code {
+export class Code {
   /**
    * Create a Code type
    *
@@ -11,7 +9,7 @@ class Code {
    * @param {Object} [scope] an optional scope for the function.
    * @return {Code}
    */
-  constructor(code, scope) {
+  constructor(public readonly code: string | Function, public readonly scope?: any) {
     this.code = code;
     this.scope = scope;
   }
@@ -37,10 +35,9 @@ class Code {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     return new Code(doc.$code, doc.$scope);
   }
 }
 
 Object.defineProperty(Code.prototype, '_bsontype', { value: 'Code' });
-module.exports = { Code };

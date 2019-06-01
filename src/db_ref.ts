@@ -1,9 +1,13 @@
-'use strict';
-
+import { ObjectId } from './objectid';
 /**
  * A class representation of the BSON DBRef type.
  */
-class DBRef {
+export class DBRef {
+  public collection: string;
+  public oid: ObjectId;
+  public db?: string;
+  private fields: Record<string, any>;
+
   /**
    * Create a DBRef type
    *
@@ -12,12 +16,12 @@ class DBRef {
    * @param {string} [db] optional db name, if omitted the reference is local to the current db.
    * @return {DBRef}
    */
-  constructor(collection, oid, db, fields) {
+  constructor(collection: string, oid: ObjectId, db?: string, fields?: object) {
     // check if namespace has been provided
-    const parts = collection.split('.');
+    const parts: string[] = collection.split('.');
     if (parts.length === 2) {
-      db = parts.shift();
-      collection = parts.shift();
+      db = parts.shift() as string;
+      collection = parts.shift() as string;
     }
 
     this.collection = collection;
@@ -47,7 +51,7 @@ class DBRef {
    * @ignore
    */
   toExtendedJSON() {
-    let o = {
+    let o : Record<string, any> = {
       $ref: this.collection,
       $id: this.oid
     };
@@ -60,23 +64,21 @@ class DBRef {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     var copy = Object.assign({}, doc);
     ['$ref', '$id', '$db'].forEach(k => delete copy[k]);
     return new DBRef(doc.$ref, doc.$id, doc.$db, copy);
   }
+
+  // the 1.x parser used a "namespace" property, while 4.x uses "collection". To ensure backwards
+  // compatibility, let's expose "namespace"
+  get namespace() {
+    return this.collection;
+  }
+
+  set namespace(val) {
+    this.collection = val;
+  }
 }
 
 Object.defineProperty(DBRef.prototype, '_bsontype', { value: 'DBRef' });
-// the 1.x parser used a "namespace" property, while 4.x uses "collection". To ensure backwards
-// compatibility, let's expose "namespace"
-Object.defineProperty(DBRef.prototype, 'namespace', {
-  get() {
-    return this.collection;
-  },
-  set(val) {
-    this.collection = val;
-  },
-  configurable: false
-});
-module.exports = { DBRef };

@@ -1,8 +1,7 @@
-'use strict';
 /**
  * A class representation of the BSON MinKey type.
  */
-class MinKey {
+export class MinKey {
   /**
    * Create a MinKey type
    *
@@ -26,4 +25,3 @@ class MinKey {
 }
 
 Object.defineProperty(MinKey.prototype, '_bsontype', { value: 'MinKey' });
-module.exports = { MinKey };

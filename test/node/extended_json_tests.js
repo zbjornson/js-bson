@@ -340,7 +340,7 @@ describe('Extended JSON', function() {
           binary: new bsonModule.Binary(buffer),
           code: new bsonModule.Code('function() {}'),
           dbRef: new bsonModule.DBRef('tests', new Int32(1), 'test'),
-          decimal128: new bsonModule.Decimal128.fromString('9991223372036854775807'),
+          decimal128: bsonModule.Decimal128.fromString('9991223372036854775807'),
           double: new bsonModule.Double(10.1),
           int32: new bsonModule.Int32(10),
           long: new bsonModule.Long.fromString('1223372036854775807'),

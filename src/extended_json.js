@@ -1,7 +1,6 @@
 'use strict';
 
 // const Buffer = require('buffer').Buffer;
-// const Map = require('./map');
 const Long = require('./long').Long;
 const Double = require('./double').Double;
 const Timestamp = require('./timestamp').Timestamp;

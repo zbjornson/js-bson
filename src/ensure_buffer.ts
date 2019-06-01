@@ -1,6 +1,7 @@
 'use strict';
 
-const Buffer = require('buffer').Buffer;
+import * as bufferModule from 'buffer';
+const Buffer = bufferModule.Buffer;
 
 /**
  * Makes sure that, if a Uint8Array is passed in, it is wrapped in a Buffer.
@@ -10,7 +11,7 @@ const Buffer = require('buffer').Buffer;
  * wraps a passed in Uint8Array
  * @throws {TypeError} If anything other than a Buffer or Uint8Array is passed in
  */
-module.exports = function ensureBuffer(potentialBuffer) {
+export function ensureBuffer(potentialBuffer: any): Buffer|never {
   if (potentialBuffer instanceof Buffer) {
     return potentialBuffer;
   }

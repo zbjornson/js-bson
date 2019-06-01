@@ -1,7 +1,6 @@
 'use strict';
 
 const Buffer = require('buffer').Buffer;
-const Map = require('./map');
 const Long = require('./long').Long;
 const Double = require('./double').Double;
 const Timestamp = require('./timestamp').Timestamp;
@@ -22,7 +21,7 @@ const EJSON = require('./extended_json');
 const internalDeserialize = require('./parser/deserializer');
 const internalSerialize = require('./parser/serializer');
 const internalCalculateObjectSize = require('./parser/calculate_size');
-const ensureBuffer = require('./ensure_buffer');
+const ensureBuffer = require('./ensure_buffer').ensureBuffer;
 
 /**
  * @ignore

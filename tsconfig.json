@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
+        "target": "es2018",
         "module": "commonjs",
         "lib": [
-            "es2015"
+            "es2018"
         ],
         "outDir": "lib",
         "noImplicitAny": true,
@@ -14,10 +15,12 @@
         ],
         "allowJs": true,
         "noEmit": false,
+        "declaration": false,
         "forceConsistentCasingInFileNames": true
     },
     "include": [
-        "src/**.js",
-        "src/**.d.ts"
+        "src/**/*.js",
+        "src/**/*.d.ts",
+        "src/**/*.ts"
     ]
 }

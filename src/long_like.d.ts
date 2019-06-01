@@ -5,6 +5,8 @@
  * with 'Long' replaced by 'Timestamp' (changed to inheritance in js-node@2.0.0)
  */
 export class LongLike<T> {
+  public low: number;
+  public high: number;
 
   /**
    * @param low The low (signed) 32 bits.

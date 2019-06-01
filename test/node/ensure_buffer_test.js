@@ -1,7 +1,7 @@
 'use strict';
 
 const Buffer = require('buffer').Buffer;
-const ensureBuffer = require('../../lib/ensure_buffer');
+const ensureBuffer = require('../../lib/ensure_buffer').ensureBuffer;
 const expect = require('chai').expect;
 
 describe('ensureBuffer tests', function() {

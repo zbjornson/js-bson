@@ -1,14 +1,14 @@
-'use strict';
 /**
  * A class representation of the BSON Symbol type.
  */
-class BSONSymbol {
+export class BSONSymbol {
+  private value: string;
   /**
    * Create a Symbol type
    *
    * @param {string} value the string representing the symbol.
    */
-  constructor(value) {
+  constructor(value: string) {
     this.value = value;
   }
 
@@ -53,10 +53,9 @@ class BSONSymbol {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc) {
+  static fromExtendedJSON(doc: any) {
     return new BSONSymbol(doc.$symbol);
   }
 }
 
 Object.defineProperty(BSONSymbol.prototype, '_bsontype', { value: 'Symbol' });
-module.exports = { BSONSymbol };

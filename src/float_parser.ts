@@ -31,7 +31,7 @@
 //
 // Modifications to writeIEEE754 to support negative zeroes made by Brian White
 
-function readIEEE754(buffer, offset, endian, mLen, nBytes) {
+export function readIEEE754(buffer: Buffer, offset: number, endian: 'big'|'little', mLen: number, nBytes: number) {
   let e,
     m,
     bBE = endian === 'big',
@@ -66,7 +66,7 @@ function readIEEE754(buffer, offset, endian, mLen, nBytes) {
   return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
 }
 
-function writeIEEE754(buffer, value, offset, endian, mLen, nBytes) {
+export function writeIEEE754(buffer: Buffer, value: number, offset: number, endian: 'big'|'little', mLen: number, nBytes: number) {
   let e,
     m,
     c,
@@ -136,8 +136,3 @@ function writeIEEE754(buffer, value, offset, endian, mLen, nBytes) {
 
   buffer[offset + i - d] |= s * 128;
 }
-
-module.exports = {
-  readIEEE754,
-  writeIEEE754
-};
