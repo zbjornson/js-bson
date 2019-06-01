@@ -116,7 +116,7 @@ import { BSONRegExp } from './regexp';
 import { BSONSymbol } from './symbol';
 import { Long } from './long';
 import { Timestamp } from './timestamp';
-import { EJSON } from './extended_json';
+import * as EJSON from './extended_json';
 
 export {
   Binary,
