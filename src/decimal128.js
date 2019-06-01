@@ -1,6 +1,6 @@
 'use strict';
 
-let Long = require('./long');
+let Long = require('./long').Long;
 const Buffer = require('buffer').Buffer;
 
 const PARSE_STRING_REGEXP = /^(\+|-)?(\d+|(\d*\.\d*))?(E|e)?([-+])?(\d+)?$/;
@@ -804,4 +804,4 @@ Decimal128.fromExtendedJSON = function(doc) {
 };
 
 Object.defineProperty(Decimal128.prototype, '_bsontype', { value: 'Decimal128' });
-module.exports = Decimal128;
+module.exports = { Decimal128 };

@@ -1,7 +1,7 @@
 'use strict';
 
 const Buffer = require('buffer').Buffer;
-const Long = require('./long');
+const Long = require('./long').Long;
 
 const MASK_8 = 0xff;
 const MASK_24 = 0xffffff;

@@ -49,4 +49,4 @@ class Double {
 }
 
 Object.defineProperty(Double.prototype, '_bsontype', { value: 'Double' });
-module.exports = Double;
+module.exports = { Double };

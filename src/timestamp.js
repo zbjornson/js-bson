@@ -1,6 +1,6 @@
 'use strict';
 
-const Long = require('./long');
+const Long = require('./long').Long;
 
 /**
  * @class
@@ -94,4 +94,4 @@ Object.defineProperty(Timestamp.prototype, '_bsontype', { value: 'Timestamp' });
 
 Timestamp.MAX_VALUE = Timestamp.MAX_UNSIGNED_VALUE;
 
-module.exports = Timestamp;
+module.exports = { Timestamp };

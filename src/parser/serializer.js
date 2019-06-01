@@ -2,9 +2,9 @@
 
 const Buffer = require('buffer').Buffer;
 const writeIEEE754 = require('../float_parser').writeIEEE754;
-const Long = require('../long');
+const Long = require('../long').Long;
 const Map = require('../map');
-const Binary = require('../binary');
+const Binary = require('../binary').Binary;
 const constants = require('../constants');
 const normalizedFunctionString = require('./utils').normalizedFunctionString;
 

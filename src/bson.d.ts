@@ -113,7 +113,7 @@ import { MaxKey } from './max_key';
 import { MinKey } from './min_key';
 import { ObjectId } from './objectid';
 import { BSONRegExp } from './regexp';
-import { Symbol } from './symbol';
+import { BSONSymbol } from './symbol';
 import { Long } from './long';
 import { Timestamp } from './timestamp';
 import { EJSON } from './extended_json';
@@ -135,7 +135,7 @@ export {
   */
   ObjectId as ObjectID,
   BSONRegExp,
-  Symbol,
+  BSONSymbol,
   Long,
   Timestamp,
   EJSON

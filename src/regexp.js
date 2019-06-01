@@ -61,4 +61,4 @@ class BSONRegExp {
 }
 
 Object.defineProperty(BSONRegExp.prototype, '_bsontype', { value: 'BSONRegExp' });
-module.exports = BSONRegExp;
+module.exports = { BSONRegExp };

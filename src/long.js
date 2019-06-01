@@ -18,4 +18,4 @@ Long.fromExtendedJSON = function(doc, options) {
 };
 
 Object.defineProperty(Long.prototype, '_bsontype', { value: 'Long' });
-module.exports = Long;
+module.exports = { Long };

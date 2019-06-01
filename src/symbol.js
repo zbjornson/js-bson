@@ -59,4 +59,4 @@ class BSONSymbol {
 }
 
 Object.defineProperty(BSONSymbol.prototype, '_bsontype', { value: 'Symbol' });
-module.exports = BSONSymbol;
+module.exports = { BSONSymbol };

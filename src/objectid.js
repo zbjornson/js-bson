@@ -415,4 +415,4 @@ ObjectId.index = ~~(Math.random() * 0xffffff);
 // This caused interoperability problems with previous versions of the library, so in
 // later builds we changed it back to ObjectID (capital D) to match legacy implementations.
 Object.defineProperty(ObjectId.prototype, '_bsontype', { value: 'ObjectID' });
-module.exports = ObjectId;
+module.exports = { ObjectId };

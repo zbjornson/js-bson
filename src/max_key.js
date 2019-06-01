@@ -26,4 +26,4 @@ class MaxKey {
 }
 
 Object.defineProperty(MaxKey.prototype, '_bsontype', { value: 'MaxKey' });
-module.exports = MaxKey;
+module.exports = { MaxKey };

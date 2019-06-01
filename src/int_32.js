@@ -47,4 +47,4 @@ class Int32 {
 }
 
 Object.defineProperty(Int32.prototype, '_bsontype', { value: 'Int32' });
-module.exports = Int32;
+module.exports = { Int32 };

@@ -2,19 +2,19 @@
 
 // const Buffer = require('buffer').Buffer;
 // const Map = require('./map');
-const Long = require('./long');
-const Double = require('./double');
-const Timestamp = require('./timestamp');
-const ObjectId = require('./objectid');
-const BSONRegExp = require('./regexp');
-const Symbol = require('./symbol');
-const Int32 = require('./int_32');
-const Code = require('./code');
-const Decimal128 = require('./decimal128');
-const MinKey = require('./min_key');
-const MaxKey = require('./max_key');
-const DBRef = require('./db_ref');
-const Binary = require('./binary');
+const Long = require('./long').Long;
+const Double = require('./double').Double;
+const Timestamp = require('./timestamp').Timestamp;
+const ObjectId = require('./objectid').ObjectId;
+const BSONRegExp = require('./regexp').BSONRegExp;
+const Symbol = require('./symbol').BSONSymbol;
+const Int32 = require('./int_32').Int32;
+const Code = require('./code').Code;
+const Decimal128 = require('./decimal128').Decimal128;
+const MinKey = require('./min_key').MinKey;
+const MaxKey = require('./max_key').MaxKey;
+const DBRef = require('./db_ref').DBRef;
+const Binary = require('./binary').Binary;
 
 /**
  * @namespace EJSON

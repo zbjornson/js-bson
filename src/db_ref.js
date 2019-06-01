@@ -79,4 +79,4 @@ Object.defineProperty(DBRef.prototype, 'namespace', {
   },
   configurable: false
 });
-module.exports = DBRef;
+module.exports = { DBRef };

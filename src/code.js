@@ -43,4 +43,4 @@ class Code {
 }
 
 Object.defineProperty(Code.prototype, '_bsontype', { value: 'Code' });
-module.exports = Code;
+module.exports = { Code };

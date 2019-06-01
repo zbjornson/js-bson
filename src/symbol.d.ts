@@ -3,7 +3,7 @@
  * A class representation of the BSON Symbol type.
  * @deprecated
  */
-export class Symbol {
+export class BSONSymbol {
 
   constructor(value: string);
 

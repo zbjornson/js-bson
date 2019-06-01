@@ -26,4 +26,4 @@ class MinKey {
 }
 
 Object.defineProperty(MinKey.prototype, '_bsontype', { value: 'MinKey' });
-module.exports = MinKey;
+module.exports = { MinKey };

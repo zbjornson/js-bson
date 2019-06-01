@@ -392,4 +392,4 @@ Binary.SUBTYPE_MD5 = 5;
 Binary.SUBTYPE_USER_DEFINED = 128;
 
 Object.defineProperty(Binary.prototype, '_bsontype', { value: 'Binary' });
-module.exports = Binary;
+module.exports = { Binary };

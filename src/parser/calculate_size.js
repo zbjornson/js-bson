@@ -1,7 +1,7 @@
 'use strict';
 
 const Buffer = require('buffer').Buffer;
-const Binary = require('../binary');
+const Binary = require('../binary').Binary;
 const normalizedFunctionString = require('./utils').normalizedFunctionString;
 const constants = require('../constants');
 

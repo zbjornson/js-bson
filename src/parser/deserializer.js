@@ -1,18 +1,18 @@
 'use strict';
 
 const Buffer = require('buffer').Buffer;
-const Long = require('../long');
-const Double = require('../double');
-const Timestamp = require('../timestamp');
-const ObjectId = require('../objectid');
-const Code = require('../code');
-const MinKey = require('../min_key');
-const MaxKey = require('../max_key');
-const Decimal128 = require('../decimal128');
-const Int32 = require('../int_32');
-const DBRef = require('../db_ref');
-const BSONRegExp = require('../regexp');
-const Binary = require('../binary');
+const Long = require('../long').Long;
+const Double = require('../double').Double;
+const Timestamp = require('../timestamp').Timestamp;
+const ObjectId = require('../objectid').ObjectId;
+const Code = require('../code').Code;
+const MinKey = require('../min_key').MinKey;
+const MaxKey = require('../max_key').MaxKey;
+const Decimal128 = require('../decimal128').Decimal128;
+const Int32 = require('../int_32').Int32;
+const DBRef = require('../db_ref').DBRef;
+const BSONRegExp = require('../regexp').BSONRegExp;
+const Binary = require('../binary').Binary;
 const constants = require('../constants');
 const validateUtf8 = require('../validate_utf8').validateUtf8;
 
