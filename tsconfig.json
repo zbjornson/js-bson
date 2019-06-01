@@ -11,16 +11,16 @@
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "types": [
-            "@types/node"
+            "@types/node",
+            "@types/long"
         ],
-        "allowJs": true,
+        "allowJs": false,
         "noEmit": false,
-        "declaration": false,
+        "declaration": true,
         "forceConsistentCasingInFileNames": true
     },
     "include": [
-        "src/**/*.js",
-        "src/**/*.d.ts",
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "interfaces/**.d.ts"
     ]
 }

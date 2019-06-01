@@ -34,7 +34,7 @@ export class Int32 {
   /**
    * @ignore
    */
-  toExtendedJSON(options: any) {
+  toExtendedJSON(options?: any) {
     if (options && options.relaxed) return this.value;
     return { $numberInt: this.value.toString() };
   }
@@ -42,7 +42,7 @@ export class Int32 {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc: any, options: any) {
+  static fromExtendedJSON(doc: any, options?: any) {
     return options && options.relaxed ? parseInt(doc.$numberInt, 10) : new Int32(doc.$numberInt);
   }
 }

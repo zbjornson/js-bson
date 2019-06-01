@@ -7,10 +7,12 @@
     "parser"
   ],
   "files": [
+    "interfaces",
     "lib",
     "dist",
     "bower.json"
   ],
+  "typings": "lib/bson.d.ts",
   "version": "4.0.2",
   "author": "Christian Amor Kvalheim <christkv@gmail.com>",
   "license": "Apache-2.0",
@@ -23,7 +25,6 @@
   "devDependencies": {
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
-    "@types/node": "^12.0.4",
     "benchmark": "^2.1.4",
     "chai": "^4.2.0",
     "dmd-clear": "^0.1.2",
@@ -73,6 +74,8 @@
     "release": "standard-version -i HISTORY.md"
   },
   "dependencies": {
+    "@types/long": "^4.0.0",
+    "@types/node": "^12.0.4",
     "buffer": "^5.1.0",
     "long": "^4.0.0"
   }

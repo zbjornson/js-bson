@@ -34,7 +34,7 @@ export class Double {
   /**
    * @ignore
    */
-  toExtendedJSON(options: any) {
+  toExtendedJSON(options?: any) {
     if (options && options.relaxed && isFinite(this.value)) return this.value;
     return { $numberDouble: this.value.toString() };
   }
@@ -42,7 +42,7 @@ export class Double {
   /**
    * @ignore
    */
-  static fromExtendedJSON(doc: any, options: any) {
+  static fromExtendedJSON(doc: any, options?: any) {
     return options && options.relaxed
       ? parseFloat(doc.$numberDouble)
       : new Double(parseFloat(doc.$numberDouble));
