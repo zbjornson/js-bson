@@ -1,6 +1,5 @@
 'use strict';
 
-const M = require('../../lib/map');
 const BSON = require('../../lib/bson');
 const expect = require('chai').expect;
 
@@ -9,7 +8,7 @@ describe('Map', function() {
    * @ignore
    */
   it('should correctly exercise the map', function(done) {
-    var m = new M([['a', 1], ['b', 2]]);
+    var m = new Map([['a', 1], ['b', 2]]);
     expect(m.has('a')).to.be.ok;
     expect(m.has('b')).to.be.ok;
     expect(1).to.equal(m.get('a'));
@@ -83,7 +82,7 @@ describe('Map', function() {
    */
   it('should serialize a map', function(done) {
     // Serialize top level map only
-    var m = new M([['a', 1], ['b', 2]]);
+    var m = new Map([['a', 1], ['b', 2]]);
     // Serialize the map
     var data = BSON.serialize(m, false, true);
     // Deserialize the data
@@ -91,8 +90,8 @@ describe('Map', function() {
     expect({ a: 1, b: 2 }).to.deep.equal(object);
 
     // Serialize nested maps
-    var m1 = new M([['a', 1], ['b', 2]]);
-    m = new M([['c', m1]]);
+    var m1 = new Map([['a', 1], ['b', 2]]);
+    m = new Map([['c', m1]]);
     // Serialize the map
     data = BSON.serialize(m, false, true);
     // Deserialize the data
@@ -101,7 +100,7 @@ describe('Map', function() {
     done();
 
     // Serialize top level map only
-    m = new M([['1', 1], ['0', 2]]);
+    m = new Map([['1', 1], ['0', 2]]);
     // Serialize the map, validating that the order in the resulting BSON is preserved
     data = BSON.serialize(m, false, true);
     expect('13000000103100010000001030000200000000').to.equal(data.toString('hex'));
