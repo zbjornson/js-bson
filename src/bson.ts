@@ -1,27 +1,129 @@
 'use strict';
 
+// import * as bufferModule from 'buffer';
+// const Buffer = bufferModule.Buffer;
+
+// import { Buffer } from 'buffer';
+
 const Buffer = require('buffer').Buffer;
-const Long = require('./long').Long;
-const Double = require('./double').Double;
-const Timestamp = require('./timestamp').Timestamp;
-const ObjectId = require('./objectid').ObjectId;
-const BSONRegExp = require('./regexp').BSONRegExp;
-const BSONSymbol = require('./symbol').BSONSymbol;
-const Int32 = require('./int_32').Int32;
-const Code = require('./code').Code;
-const Decimal128 = require('./decimal128').Decimal128;
-const MinKey = require('./min_key').MinKey;
-const MaxKey = require('./max_key').MaxKey;
-const DBRef = require('./db_ref').DBRef;
-const Binary = require('./binary').Binary;
-const constants = require('./constants');
-const EJSON = require('./extended_json');
+
+import { Long } from './long';
+import { Double } from './double';
+import { Timestamp } from './timestamp';
+import { ObjectId } from './objectid';
+import { Code } from './code';
+import { MinKey } from './min_key';
+import { MaxKey } from './max_key';
+import { Decimal128 } from './decimal128';
+import { Int32 } from './int_32';
+import { DBRef } from './db_ref';
+import { BSONRegExp } from './regexp';
+import { Binary } from './binary';
+import { BSONSymbol } from './symbol';
+import * as EJSON from './extended_json';
+
+const _Map = Map;
+
+import {
+  BSON_INT32_MAX,
+  BSON_INT32_MIN,
+  BSON_INT64_MAX,
+  BSON_INT64_MIN,
+  JS_INT_MAX,
+  JS_INT_MIN,
+  BSON_DATA_NUMBER,
+  BSON_DATA_STRING,
+  BSON_DATA_OBJECT,
+  BSON_DATA_ARRAY,
+  BSON_DATA_BINARY,
+  BSON_DATA_UNDEFINED,
+  BSON_DATA_OID,
+  BSON_DATA_BOOLEAN,
+  BSON_DATA_DATE,
+  BSON_DATA_NULL,
+  BSON_DATA_REGEXP,
+  BSON_DATA_DBPOINTER,
+  BSON_DATA_CODE,
+  BSON_DATA_SYMBOL,
+  BSON_DATA_CODE_W_SCOPE,
+  BSON_DATA_INT,
+  BSON_DATA_TIMESTAMP,
+  BSON_DATA_LONG,
+  BSON_DATA_DECIMAL128,
+  BSON_DATA_MIN_KEY,
+  BSON_DATA_MAX_KEY,
+  BSON_BINARY_SUBTYPE_DEFAULT,
+  BSON_BINARY_SUBTYPE_FUNCTION,
+  BSON_BINARY_SUBTYPE_BYTE_ARRAY,
+  BSON_BINARY_SUBTYPE_UUID,
+  BSON_BINARY_SUBTYPE_MD5,
+  BSON_BINARY_SUBTYPE_USER_DEFINED,
+} from './constants';
+export {
+  // constants
+  // NOTE: this is done this way because rollup can't resolve an `Object.assign`ed export
+  BSON_INT32_MAX,
+  BSON_INT32_MIN,
+  BSON_INT64_MAX,
+  BSON_INT64_MIN,
+  JS_INT_MAX,
+  JS_INT_MIN,
+  BSON_DATA_NUMBER,
+  BSON_DATA_STRING,
+  BSON_DATA_OBJECT,
+  BSON_DATA_ARRAY,
+  BSON_DATA_BINARY,
+  BSON_DATA_UNDEFINED,
+  BSON_DATA_OID,
+  BSON_DATA_BOOLEAN,
+  BSON_DATA_DATE,
+  BSON_DATA_NULL,
+  BSON_DATA_REGEXP,
+  BSON_DATA_DBPOINTER,
+  BSON_DATA_CODE,
+  BSON_DATA_SYMBOL,
+  BSON_DATA_CODE_W_SCOPE,
+  BSON_DATA_INT,
+  BSON_DATA_TIMESTAMP,
+  BSON_DATA_LONG,
+  BSON_DATA_DECIMAL128,
+  BSON_DATA_MIN_KEY,
+  BSON_DATA_MAX_KEY,
+  BSON_BINARY_SUBTYPE_DEFAULT,
+  BSON_BINARY_SUBTYPE_FUNCTION,
+  BSON_BINARY_SUBTYPE_BYTE_ARRAY,
+  BSON_BINARY_SUBTYPE_UUID,
+  BSON_BINARY_SUBTYPE_MD5,
+  BSON_BINARY_SUBTYPE_USER_DEFINED,
+
+  // wrapped types
+  Code,
+  BSONSymbol,
+  DBRef,
+  Binary,
+  ObjectId,
+  Long,
+  Timestamp,
+  Double,
+  Int32,
+  MinKey,
+  MaxKey,
+  BSONRegExp,
+  Decimal128,
+
+  // legacy support
+  ObjectId as ObjectID,
+  _Map as Map,
+
+  // Extended JSON
+  EJSON
+};
 
 // Parts of the parser
-const internalDeserialize = require('./parser/deserializer').deserialize;
-const internalSerialize = require('./parser/serializer').serializeInto;
-const internalCalculateObjectSize = require('./parser/calculate_size').calculateObjectSize;
-const ensureBuffer = require('./ensure_buffer').ensureBuffer;
+import { deserialize as internalDeserialize } from './parser/deserializer';
+import { serializeInto as internalSerialize } from './parser/serializer';
+import { calculateObjectSize as internalCalculateObjectSize } from './parser/calculate_size';
+import { ensureBuffer } from './ensure_buffer';
 
 /**
  * @ignore
@@ -30,7 +132,7 @@ const ensureBuffer = require('./ensure_buffer').ensureBuffer;
 const MAXSIZE = 1024 * 1024 * 17;
 
 // Current Internal Temporary Serialization Buffer
-let buffer = Buffer.alloc(MAXSIZE);
+let _buffer = Buffer.alloc(MAXSIZE);
 
 /**
  * Sets the size of the internal serialization buffer.
@@ -38,11 +140,30 @@ let buffer = Buffer.alloc(MAXSIZE);
  * @method
  * @param {number} size The desired size for the internal serialization buffer
  */
-function setInternalBufferSize(size) {
+export function setInternalBufferSize(size: number) {
   // Resize the internal serialization buffer if needed
-  if (buffer.length < size) {
-    buffer = Buffer.alloc(size);
+  if (_buffer.length < size) {
+    _buffer = Buffer.alloc(size);
   }
+}
+
+interface CommonSerializeOptions {
+  /** {default:false}, the serializer will check if keys are valid. */
+  checkKeys?: boolean;
+  /** {default:false}, serialize the javascript functions. */
+  serializeFunctions?: boolean;
+  /** {default:true}, ignore undefined fields. */
+  ignoreUndefined?: boolean;
+}
+
+export interface SerializeOptions extends CommonSerializeOptions {
+  /** {default:1024*1024*17}, minimum size of the internal temporary serialization buffer. */
+  minInternalBufferSize?: number;
+}
+
+export interface SerializeWithBufferAndIndexOptions extends CommonSerializeOptions {
+  /** {default:0}, the index in the buffer where we wish to start serializing into. */
+  index?: number;
 }
 
 /**
@@ -54,7 +175,7 @@ function setInternalBufferSize(size) {
  * @param {Boolean} [options.ignoreUndefined=true] ignore undefined fields **(default:true)**.
  * @return {Buffer} returns the Buffer object containing the serialized object.
  */
-function serialize(object, options) {
+export function serialize(object: any, options?: SerializeOptions): Buffer {
   options = options || {};
   // Unpack the options
   const checkKeys = typeof options.checkKeys === 'boolean' ? options.checkKeys : false;
@@ -66,13 +187,13 @@ function serialize(object, options) {
     typeof options.minInternalBufferSize === 'number' ? options.minInternalBufferSize : MAXSIZE;
 
   // Resize the internal serialization buffer if needed
-  if (buffer.length < minInternalBufferSize) {
-    buffer = Buffer.alloc(minInternalBufferSize);
+  if (_buffer.length < minInternalBufferSize) {
+    _buffer = Buffer.alloc(minInternalBufferSize);
   }
 
   // Attempt to serialize
   const serializationIndex = internalSerialize(
-    buffer,
+    _buffer,
     object,
     checkKeys,
     0,
@@ -86,7 +207,7 @@ function serialize(object, options) {
   const finishedBuffer = Buffer.alloc(serializationIndex);
 
   // Copy into the finished buffer
-  buffer.copy(finishedBuffer, 0, 0, finishedBuffer.length);
+  _buffer.copy(finishedBuffer, 0, 0, finishedBuffer.length);
 
   // Return the buffer
   return finishedBuffer;
@@ -103,7 +224,7 @@ function serialize(object, options) {
  * @param {Number} [options.index] the index in the buffer where we wish to start serializing into.
  * @return {Number} returns the index pointing to the last written byte in the buffer.
  */
-function serializeWithBufferAndIndex(object, finalBuffer, options) {
+export function serializeWithBufferAndIndex(object: any, finalBuffer: Buffer, options: SerializeWithBufferAndIndexOptions) {
   options = options || {};
   // Unpack the options
   const checkKeys = typeof options.checkKeys === 'boolean' ? options.checkKeys : false;
@@ -115,7 +236,7 @@ function serializeWithBufferAndIndex(object, finalBuffer, options) {
 
   // Attempt to serialize
   const serializationIndex = internalSerialize(
-    buffer,
+    _buffer,
     object,
     checkKeys,
     0,
@@ -123,10 +244,32 @@ function serializeWithBufferAndIndex(object, finalBuffer, options) {
     serializeFunctions,
     ignoreUndefined
   );
-  buffer.copy(finalBuffer, startIndex, 0, serializationIndex);
+  _buffer.copy(finalBuffer, startIndex, 0, serializationIndex);
 
   // Return the index
   return startIndex + serializationIndex - 1;
+}
+
+
+export interface DeserializeOptions {
+  /** {default:false}, evaluate functions in the BSON document scoped to the object deserialized. */
+  evalFunctions?: boolean;
+  /** {default:false}, cache evaluated functions for reuse. */
+  cacheFunctions?: boolean;
+  /** {default:false}, use a crc32 code for caching, otherwise use the string of the function. */
+  cacheFunctionsCrc32?: boolean;
+  /** {default:true}, when deserializing a Long will fit it into a Number if it's smaller than 53 bits. */
+  promoteLongs?: boolean;
+  /** {default:false}, deserialize Binary data directly into node.js Buffer object. */
+  promoteBuffers?: boolean;
+  /** {default:false}, when deserializing will promote BSON values to their Node.js closest equivalent types. */
+  promoteValues?: boolean;
+  /** {default:null}, allow to specify if there what fields we wish to return as unserialized raw buffer. */
+  fieldsAsRaw?: { readonly [fieldName: string]: boolean };
+  /** {default:false}, return BSON regular expressions as BSONRegExp instances. */
+  bsonRegExp?: boolean;
+  /** {default:false}, allows the buffer to be larger than the parsed BSON object. */
+  allowObjectSmallerThanBufferSize?: boolean;
 }
 
 /**
@@ -144,9 +287,16 @@ function serializeWithBufferAndIndex(object, finalBuffer, options) {
  * @param {boolean} [options.allowObjectSmallerThanBufferSize=false] allows the buffer to be larger than the parsed BSON object
  * @return {Object} returns the deserialized Javascript Object.
  */
-function deserialize(buffer, options) {
+export function deserialize(buffer: Buffer, options?: DeserializeOptions): any {
   buffer = ensureBuffer(buffer);
   return internalDeserialize(buffer, options);
+}
+
+export interface CalculateObjectSizeOptions {
+  /** {default:false}, serialize the javascript functions */
+  serializeFunctions?: boolean;
+  /** {default:true}, ignore undefined fields. */
+  ignoreUndefined?: boolean;
 }
 
 /**
@@ -157,7 +307,7 @@ function deserialize(buffer, options) {
  * @param {Boolean} [options.ignoreUndefined=true] ignore undefined fields **(default:true)**.
  * @return {Number} returns the number of bytes the BSON object will take up.
  */
-function calculateObjectSize(object, options) {
+export function calculateObjectSize(object: any, options?: CalculateObjectSizeOptions) {
   options = options || {};
 
   const serializeFunctions =
@@ -166,6 +316,10 @@ function calculateObjectSize(object, options) {
     typeof options.ignoreUndefined === 'boolean' ? options.ignoreUndefined : true;
 
   return internalCalculateObjectSize(object, serializeFunctions, ignoreUndefined);
+}
+
+export interface DeserializeStreamOptions extends DeserializeOptions {
+  index?: number;
 }
 
 /**
@@ -187,7 +341,7 @@ function calculateObjectSize(object, options) {
  * @param {Object} [options.bsonRegExp=false] return BSON regular expressions as BSONRegExp instances.
  * @return {Number} returns the next index in the buffer after deserialization **x** numbers of documents.
  */
-function deserializeStream(data, startIndex, numberOfDocuments, documents, docStartIndex, options) {
+export function deserializeStream(data: Buffer, startIndex: number, numberOfDocuments: number, documents: any[], docStartIndex: number, options?: DeserializeStreamOptions) {
   options = Object.assign({ allowObjectSmallerThanBufferSize: true }, options);
   data = ensureBuffer(data);
 
@@ -208,71 +362,3 @@ function deserializeStream(data, startIndex, numberOfDocuments, documents, docSt
   // Return object containing end index of parsing and list of documents
   return index;
 }
-
-module.exports = {
-  // constants
-  // NOTE: this is done this way because rollup can't resolve an `Object.assign`ed export
-  BSON_INT32_MAX: constants.BSON_INT32_MAX,
-  BSON_INT32_MIN: constants.BSON_INT32_MIN,
-  BSON_INT64_MAX: constants.BSON_INT64_MAX,
-  BSON_INT64_MIN: constants.BSON_INT64_MIN,
-  JS_INT_MAX: constants.JS_INT_MAX,
-  JS_INT_MIN: constants.JS_INT_MIN,
-  BSON_DATA_NUMBER: constants.BSON_DATA_NUMBER,
-  BSON_DATA_STRING: constants.BSON_DATA_STRING,
-  BSON_DATA_OBJECT: constants.BSON_DATA_OBJECT,
-  BSON_DATA_ARRAY: constants.BSON_DATA_ARRAY,
-  BSON_DATA_BINARY: constants.BSON_DATA_BINARY,
-  BSON_DATA_UNDEFINED: constants.BSON_DATA_UNDEFINED,
-  BSON_DATA_OID: constants.BSON_DATA_OID,
-  BSON_DATA_BOOLEAN: constants.BSON_DATA_BOOLEAN,
-  BSON_DATA_DATE: constants.BSON_DATA_DATE,
-  BSON_DATA_NULL: constants.BSON_DATA_NULL,
-  BSON_DATA_REGEXP: constants.BSON_DATA_REGEXP,
-  BSON_DATA_DBPOINTER: constants.BSON_DATA_DBPOINTER,
-  BSON_DATA_CODE: constants.BSON_DATA_CODE,
-  BSON_DATA_SYMBOL: constants.BSON_DATA_SYMBOL,
-  BSON_DATA_CODE_W_SCOPE: constants.BSON_DATA_CODE_W_SCOPE,
-  BSON_DATA_INT: constants.BSON_DATA_INT,
-  BSON_DATA_TIMESTAMP: constants.BSON_DATA_TIMESTAMP,
-  BSON_DATA_LONG: constants.BSON_DATA_LONG,
-  BSON_DATA_DECIMAL128: constants.BSON_DATA_DECIMAL128,
-  BSON_DATA_MIN_KEY: constants.BSON_DATA_MIN_KEY,
-  BSON_DATA_MAX_KEY: constants.BSON_DATA_MAX_KEY,
-  BSON_BINARY_SUBTYPE_DEFAULT: constants.BSON_BINARY_SUBTYPE_DEFAULT,
-  BSON_BINARY_SUBTYPE_FUNCTION: constants.BSON_BINARY_SUBTYPE_FUNCTION,
-  BSON_BINARY_SUBTYPE_BYTE_ARRAY: constants.BSON_BINARY_SUBTYPE_BYTE_ARRAY,
-  BSON_BINARY_SUBTYPE_UUID: constants.BSON_BINARY_SUBTYPE_UUID,
-  BSON_BINARY_SUBTYPE_MD5: constants.BSON_BINARY_SUBTYPE_MD5,
-  BSON_BINARY_SUBTYPE_USER_DEFINED: constants.BSON_BINARY_SUBTYPE_USER_DEFINED,
-
-  // wrapped types
-  Code,
-  Map,
-  BSONSymbol,
-  DBRef,
-  Binary,
-  ObjectId,
-  Long,
-  Timestamp,
-  Double,
-  Int32,
-  MinKey,
-  MaxKey,
-  BSONRegExp,
-  Decimal128,
-
-  // methods
-  serialize,
-  serializeWithBufferAndIndex,
-  deserialize,
-  calculateObjectSize,
-  deserializeStream,
-  setInternalBufferSize,
-
-  // legacy support
-  ObjectID: ObjectId,
-
-  // Extended JSON
-  EJSON
-};
