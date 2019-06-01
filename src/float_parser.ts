@@ -1,4 +1,3 @@
-'use strict';
 // Copyright (c) 2008, Fair Oaks Labs, Inc.
 // All rights reserved.
 //

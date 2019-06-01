@@ -1,4 +1,3 @@
-'use strict';
 /**
  * A class representation of the BSON Double type.
  */

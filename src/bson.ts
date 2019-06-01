@@ -1,10 +1,3 @@
-'use strict';
-
-// import * as bufferModule from 'buffer';
-// const Buffer = bufferModule.Buffer;
-
-// import { Buffer } from 'buffer';
-
 const Buffer = require('buffer').Buffer;
 
 import { Long } from './long';

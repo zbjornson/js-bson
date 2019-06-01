@@ -1,5 +1,3 @@
-'use strict';
-
 // BSON MAX VALUES
 export const BSON_INT32_MAX = 0x7fffffff;
 export const BSON_INT32_MIN =  -0x80000000;

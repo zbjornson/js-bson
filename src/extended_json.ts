@@ -1,5 +1,3 @@
-'use strict';
-
 import { Long } from './long';
 import { Double } from './double';
 import { Timestamp } from './timestamp';

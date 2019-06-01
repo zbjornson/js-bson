@@ -1,5 +1,3 @@
-'use strict';
-
 function alphabetize(str: string) {
   return str
     .split('')

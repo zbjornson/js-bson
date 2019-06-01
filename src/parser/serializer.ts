@@ -1,5 +1,3 @@
-'use strict';
-
 import * as BufferModule from 'buffer';
 const Buffer = BufferModule.Buffer;
 

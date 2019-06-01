@@ -1,5 +1,3 @@
-'use strict';
-
 // TODO: import { Buffer } from 'buffer' breaks for some reason
 // We should investigate that
 import * as bufferModule from 'buffer';
