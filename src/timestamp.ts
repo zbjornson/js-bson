@@ -1,3 +1,4 @@
+import * as _Long from 'long';
 import { Long } from './long';
 
 /**
@@ -6,14 +7,17 @@ import { Long } from './long';
  * @param {number} high the high (signed) 32 bits of the Timestamp.
  * @return {Timestamp}
  */
+// We need a ts-ignore to suppress the issue described in
+// https://github.com/microsoft/TypeScript/issues/4628
+// @ts-ignore
 export class Timestamp extends Long {
   constructor(low: number, high: number)
-  constructor(low: Long);
-  constructor(low: number|Long, high?: number) {
+  constructor(low: _Long);
+  constructor(low: number|_Long, high?: number) {
     if (Long.isLong(low)) {
-      super((low as Long).low, (low as Long).high, true);
+      super(low.low, low.high, true);
     } else {
-      super((low as number), high, true);
+      super(low, high as number, true);
     }
   }
 
@@ -71,7 +75,7 @@ export class Timestamp extends Long {
    * @param {number} [opt_radix] the radix in which the text is written.
    * @return {Timestamp} the timestamp.
    */
-  static fromString(str: string, opt_radix: number) {
+  static fromString(str: string, opt_radix: number): Timestamp {
     return new Timestamp(Long.fromString(str, true, opt_radix));
   }
 

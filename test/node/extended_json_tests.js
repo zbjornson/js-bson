@@ -343,7 +343,7 @@ describe('Extended JSON', function() {
           decimal128: bsonModule.Decimal128.fromString('9991223372036854775807'),
           double: new bsonModule.Double(10.1),
           int32: new bsonModule.Int32(10),
-          long: new bsonModule.Long.fromString('1223372036854775807'),
+          long: bsonModule.Long.fromString('1223372036854775807'),
           maxKey: new bsonModule.MaxKey(),
           // minKey: new bsonModule.MinKey(), // broken until #310 is fixed in 1.x
           objectId: bsonModule.ObjectId.createFromHexString('111111111111111111111111'),
