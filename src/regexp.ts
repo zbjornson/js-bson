@@ -17,7 +17,7 @@ export class BSONRegExp {
    * @param {string} pattern The regular expression pattern to match
    * @param {string} options The regular expression options
    */
-  constructor(pattern?:string, options?: string) {
+  constructor(pattern?: string, options?: string) {
     // Execute
     this.pattern = pattern || '';
     this.options = options ? alphabetize(options) : '';

@@ -50,7 +50,7 @@ import {
   BSON_BINARY_SUBTYPE_BYTE_ARRAY,
   BSON_BINARY_SUBTYPE_UUID,
   BSON_BINARY_SUBTYPE_MD5,
-  BSON_BINARY_SUBTYPE_USER_DEFINED,
+  BSON_BINARY_SUBTYPE_USER_DEFINED
 } from './constants';
 export {
   // constants
@@ -88,7 +88,6 @@ export {
   BSON_BINARY_SUBTYPE_UUID,
   BSON_BINARY_SUBTYPE_MD5,
   BSON_BINARY_SUBTYPE_USER_DEFINED,
-
   // wrapped types
   Code,
   BSONSymbol,
@@ -103,11 +102,9 @@ export {
   MaxKey,
   BSONRegExp,
   Decimal128,
-
   // legacy support
   ObjectId as ObjectID,
   _Map as Map,
-
   // Extended JSON
   EJSON
 };
@@ -217,7 +214,11 @@ export function serialize(object: any, options?: SerializeOptions): Buffer {
  * @param {Number} [options.index] the index in the buffer where we wish to start serializing into.
  * @return {Number} returns the index pointing to the last written byte in the buffer.
  */
-export function serializeWithBufferAndIndex(object: any, finalBuffer: Buffer, options: SerializeWithBufferAndIndexOptions) {
+export function serializeWithBufferAndIndex(
+  object: any,
+  finalBuffer: Buffer,
+  options: SerializeWithBufferAndIndexOptions
+) {
   options = options || {};
   // Unpack the options
   const checkKeys = typeof options.checkKeys === 'boolean' ? options.checkKeys : false;
@@ -242,7 +243,6 @@ export function serializeWithBufferAndIndex(object: any, finalBuffer: Buffer, op
   // Return the index
   return startIndex + serializationIndex - 1;
 }
-
 
 export interface DeserializeOptions {
   /** {default:false}, evaluate functions in the BSON document scoped to the object deserialized. */
@@ -334,7 +334,14 @@ export interface DeserializeStreamOptions extends DeserializeOptions {
  * @param {Object} [options.bsonRegExp=false] return BSON regular expressions as BSONRegExp instances.
  * @return {Number} returns the next index in the buffer after deserialization **x** numbers of documents.
  */
-export function deserializeStream(data: Buffer, startIndex: number, numberOfDocuments: number, documents: any[], docStartIndex: number, options?: DeserializeStreamOptions) {
+export function deserializeStream(
+  data: Buffer,
+  startIndex: number,
+  numberOfDocuments: number,
+  documents: any[],
+  docStartIndex: number,
+  options?: DeserializeStreamOptions
+) {
   options = Object.assign({ allowObjectSmallerThanBufferSize: true }, options);
   data = ensureBuffer(data);
 

@@ -8,7 +8,7 @@ const Buffer = bufferModule.Buffer;
  */
 export class Binary {
   readonly _bsonvalue: 'Binary';
-  public buffer: Buffer|Uint8Array|number[];
+  public buffer: Buffer | Uint8Array | number[];
   public sub_type: number;
   public position: number;
 
@@ -71,7 +71,7 @@ export class Binary {
    * @param {Number} [subType] the option binary type.
    * @return {Binary}
    */
-  constructor(buffer?: Buffer|string|Uint8Array|number[], subType?: number) {
+  constructor(buffer?: Buffer | string | Uint8Array | number[], subType?: number) {
     if (
       buffer != null &&
       !(typeof buffer === 'string') &&
@@ -117,7 +117,7 @@ export class Binary {
    * @method
    * @param {string} byte_value a single byte we wish to write.
    */
-  put(byte_value: number|string|Uint8Array): void {
+  put(byte_value: number | string | Uint8Array): void {
     // If it's a string and a has more than one character throw an error
     if (typeof byte_value !== 'number' && byte_value['length'] != null && byte_value.length !== 1)
       throw new TypeError('only accepts single character String, Uint8Array or Array');
@@ -176,7 +176,7 @@ export class Binary {
    * @param {number} offset specify the binary of where to write the content.
    * @return {null}
    */
-  write(string: Buffer|string|Uint8Array|number[], offset?:number) {
+  write(string: Buffer | string | Uint8Array | number[], offset?: number) {
     offset = typeof offset === 'number' ? offset : this.position;
 
     // If the buffer is to small let's extend the buffer
@@ -196,7 +196,7 @@ export class Binary {
       }
 
       // Assign the new buffer
-      this.buffer = buffer as Buffer|Uint8Array;
+      this.buffer = buffer as Buffer | Uint8Array;
     }
 
     if (typeof Buffer !== 'undefined' && Buffer.isBuffer(string) && Buffer.isBuffer(this.buffer)) {
@@ -236,7 +236,7 @@ export class Binary {
    * @param {number} length the number of bytes to read.
    * @return {Buffer}
    */
-  read(position: number, length:number) {
+  read(position: number, length: number) {
     length = length && length > 0 ? length : this.position;
 
     // Let's return the data based on the type we have
@@ -302,7 +302,7 @@ export class Binary {
           return newBuffer;
         }
       } else {
-        return convertArraytoUtf8BinaryString((this.buffer as Uint8Array), 0, this.position);
+        return convertArraytoUtf8BinaryString(this.buffer as Uint8Array, 0, this.position);
       }
     }
   }
@@ -328,7 +328,9 @@ export class Binary {
    * @ignore
    */
   toString(format: Parameters<typeof Buffer.prototype.toString>[0]) {
-    return this.buffer != null ? (this.buffer as Buffer).slice(0, this.position).toString(format) : '';
+    return this.buffer != null
+      ? (this.buffer as Buffer).slice(0, this.position).toString(format)
+      : '';
   }
 
   /**
@@ -337,7 +339,7 @@ export class Binary {
   toExtendedJSON() {
     const base64String = Buffer.isBuffer(this.buffer)
       ? this.buffer.toString('base64')
-      : Buffer.from((this.buffer as any)).toString('base64');
+      : Buffer.from(this.buffer as any).toString('base64');
 
     const subType = Number(this.sub_type).toString(16);
     return {
@@ -391,7 +393,11 @@ function writeStringToArray(data: string) {
  *
  * @ignore
  */
-function convertArraytoUtf8BinaryString(byteArray: Uint8Array, startIndex: number, endIndex: number) {
+function convertArraytoUtf8BinaryString(
+  byteArray: Uint8Array,
+  startIndex: number,
+  endIndex: number
+) {
   let result = '';
   for (let i = startIndex; i < endIndex; i++) {
     result = result + String.fromCharCode(byteArray[i]);
@@ -400,10 +406,8 @@ function convertArraytoUtf8BinaryString(byteArray: Uint8Array, startIndex: numbe
   return result;
 }
 
-
-function isLengthy(input: number|string|Uint8Array): input is string|Uint8Array {
+function isLengthy(input: number | string | Uint8Array): input is string | Uint8Array {
   return (input as any).length != null;
 }
-
 
 Object.defineProperty(Binary.prototype, '_bsontype', { value: 'Binary' });

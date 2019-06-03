@@ -17,7 +17,7 @@ export class Long extends _Long {
   readonly _bsontype: 'Long';
   constructor(low: number, high: number, unsigned?: boolean);
   constructor(low: _Long);
-  constructor(low: number|_Long, high?: number, unsigned?: boolean) {
+  constructor(low: number | _Long, high?: number, unsigned?: boolean) {
     if (Long.isLong(low)) {
       super(low.low, low.high, low.unsigned);
     } else {
@@ -51,14 +51,16 @@ export class Long extends _Long {
   shiftRightUnsigned: (numBits: number | _Long) => this;
   subtract: (subrahend: string | number | _Long) => this;
   xor: (other: string | number | _Long) => this;
-  static fromBits: ( lowBits: number, highBits: number, unsigned?: boolean ) => Long;
-  static fromInt: ( value: number, unsigned?: boolean ) => Long;
-  static fromNumber: ( value: number, unsigned?: boolean ) => Long;
-  static fromString: ( str: string, unsigned?: boolean | number, radix?: number ) => Long;
-  static fromBytes: ( bytes: number[], unsigned?: boolean, le?: boolean ) => Long;
-  static fromBytesLE: ( bytes: number[], unsigned?: boolean ) => Long;
-  static fromBytesBE: ( bytes: number[], unsigned?: boolean ) => Long;
-  static fromValue: ( val: _Long | number | string | {low: number, high: number, unsigned: boolean} ) => Long;
+  static fromBits: (lowBits: number, highBits: number, unsigned?: boolean) => Long;
+  static fromInt: (value: number, unsigned?: boolean) => Long;
+  static fromNumber: (value: number, unsigned?: boolean) => Long;
+  static fromString: (str: string, unsigned?: boolean | number, radix?: number) => Long;
+  static fromBytes: (bytes: number[], unsigned?: boolean, le?: boolean) => Long;
+  static fromBytesLE: (bytes: number[], unsigned?: boolean) => Long;
+  static fromBytesBE: (bytes: number[], unsigned?: boolean) => Long;
+  static fromValue: (
+    val: _Long | number | string | { low: number; high: number; unsigned: boolean }
+  ) => Long;
   static isLong: (obj: any) => obj is _Long;
 }
 
@@ -87,10 +89,10 @@ export class Long extends _Long {
 // Automate creation of overridden static functions
 [
   'fromBits',
-  'fromInt', 
+  'fromInt',
   'fromNumber',
   'fromString',
-  'fromBytes', 
+  'fromBytes',
   'fromBytesLE',
   'fromBytesBE',
   'fromValue'

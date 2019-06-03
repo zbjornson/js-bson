@@ -23,7 +23,7 @@ const JS_INT_MIN_LONG = Long.fromNumber(constants.JS_INT_MIN);
 const functionCache = {};
 
 export interface DeserializeOptions {
-  index?: number,
+  index?: number;
   allowObjectSmallerThanBufferSize?: boolean;
   evalFunctions?: boolean;
   cacheFunctions?: boolean;
@@ -74,7 +74,12 @@ export function deserialize(buffer: Buffer, options?: DeserializeOptions, isArra
   return deserializeObject(buffer, index, options, isArray);
 }
 
-function deserializeObject(buffer: Buffer, index: number, options: DeserializeOptions, isArray?: boolean) {
+function deserializeObject(
+  buffer: Buffer,
+  index: number,
+  options: DeserializeOptions,
+  isArray?: boolean
+) {
   const evalFunctions = options['evalFunctions'] == null ? false : options['evalFunctions'];
   const cacheFunctions = options['cacheFunctions'] == null ? false : options['cacheFunctions'];
 
@@ -105,7 +110,7 @@ function deserializeObject(buffer: Buffer, index: number, options: DeserializeOp
   if (size < 5 || size > buffer.length) throw new Error('corrupt bson message');
 
   // Create holding object
-  const object = isArray ? [] as any[] : {} as Record<string, any>;
+  const object = isArray ? ([] as any[]) : ({} as Record<string, any>);
   // Used for arrays to skip having to perform utf8 decoding
   let arrayIndex = 0;
   let done = false;
@@ -617,7 +622,12 @@ function deserializeObject(buffer: Buffer, index: number, options: DeserializeOp
  * @ignore
  * @api private
  */
-function isolateEvalWithHash(functionCache: Record<string, any>, hash: string, functionString:string, object: any) {
+function isolateEvalWithHash(
+  functionCache: Record<string, any>,
+  hash: string,
+  functionString: string,
+  object: any
+) {
   // Contains the value we are going to set
   let value = null;
 

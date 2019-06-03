@@ -9,7 +9,7 @@ const Buffer = bufferModule.Buffer;
  * wraps a passed in Uint8Array
  * @throws {TypeError} If anything other than a Buffer or Uint8Array is passed in
  */
-export function ensureBuffer(potentialBuffer: any): Buffer|never {
+export function ensureBuffer(potentialBuffer: any): Buffer | never {
   if (potentialBuffer instanceof Buffer) {
     return potentialBuffer;
   }
@@ -19,4 +19,4 @@ export function ensureBuffer(potentialBuffer: any): Buffer|never {
   }
 
   throw new TypeError('Must use either Buffer or Uint8Array');
-};
+}

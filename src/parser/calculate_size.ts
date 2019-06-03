@@ -10,7 +10,11 @@ function isDate(d: any): d is Date {
   return typeof d === 'object' && Object.prototype.toString.call(d) === '[object Date]';
 }
 
-export function calculateObjectSize(object: unknown, serializeFunctions: boolean, ignoreUndefined: boolean) {
+export function calculateObjectSize(
+  object: unknown,
+  serializeFunctions: boolean,
+  ignoreUndefined: boolean
+) {
   let totalLength = 4 + 1;
 
   if (Array.isArray(object)) {
@@ -31,8 +35,14 @@ export function calculateObjectSize(object: unknown, serializeFunctions: boolean
     }
 
     // Calculate size
-    for (let key in (object as any)) {
-      totalLength += calculateElement(key, (object as any)[key], serializeFunctions, false, ignoreUndefined);
+    for (let key in object as any) {
+      totalLength += calculateElement(
+        key,
+        (object as any)[key],
+        serializeFunctions,
+        false,
+        ignoreUndefined
+      );
     }
   }
 
@@ -43,7 +53,13 @@ export function calculateObjectSize(object: unknown, serializeFunctions: boolean
  * @ignore
  * @api private
  */
-function calculateElement(name: string, value: any, serializeFunctions: boolean, isArray: boolean, ignoreUndefined: boolean) {
+function calculateElement(
+  name: string,
+  value: any,
+  serializeFunctions: boolean,
+  isArray: boolean,
+  ignoreUndefined: boolean
+) {
   // If we have toBSON defined, override the current object
   if (value && (value as any).toBSON) {
     value = (value as any).toBSON();
@@ -75,7 +91,11 @@ function calculateElement(name: string, value: any, serializeFunctions: boolean,
     case 'boolean':
       return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + (1 + 1);
     case 'object':
-      if (value == null || (value as any)['_bsontype'] === 'MinKey' || value['_bsontype'] === 'MaxKey') {
+      if (
+        value == null ||
+        (value as any)['_bsontype'] === 'MinKey' ||
+        value['_bsontype'] === 'MaxKey'
+      ) {
         return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + 1;
       } else if (value['_bsontype'] === 'ObjectId' || value['_bsontype'] === 'ObjectID') {
         return (name != null ? Buffer.byteLength(name, 'utf8') + 1 : 0) + (12 + 1);

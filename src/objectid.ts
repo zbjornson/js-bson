@@ -55,7 +55,7 @@ export class ObjectId {
    * @ignore
    */
   static index = ~~(Math.random() * 0xffffff);
-  public id: Buffer|string;
+  public id: Buffer | string;
   private __id: string;
   /**
    * Create an ObjectId type
@@ -224,7 +224,7 @@ export class ObjectId {
   equals(otherId: ObjectId): boolean;
   equals(otherId: string): boolean;
   equals(otherId: { toHexString: () => string }): boolean;
-  equals(otherId: ObjectId|string|{ toHexString: () => string }|object ): boolean {
+  equals(otherId: ObjectId | string | { toHexString: () => string } | object): boolean {
     if (otherId instanceof ObjectId) {
       return this.toString() === otherId.toString();
     }
@@ -328,7 +328,7 @@ export class ObjectId {
    * @method
    * @return {boolean} return true if the value is a valid bson ObjectId, return false otherwise.
    */
-  static isValid(id: string | number | ObjectId | Buffer | { toHexString: () => string}) {
+  static isValid(id: string | number | ObjectId | Buffer | { toHexString: () => string }) {
     if (id == null) return false;
 
     if (typeof id === 'number') {
@@ -349,7 +349,10 @@ export class ObjectId {
 
     // Duck-Typing detection of ObjectId like objects
     if ((id as any).toHexString) {
-      return (id as ObjectId).id.length === 12 || ((id as ObjectId).id.length === 24 && checkForHexRegExp.test((id as ObjectId).id as string));
+      return (
+        (id as ObjectId).id.length === 12 ||
+        ((id as ObjectId).id.length === 24 && checkForHexRegExp.test((id as ObjectId).id as string))
+      );
     }
 
     return false;
@@ -393,7 +396,7 @@ ObjectId.prototype.getInc = deprecate(
 );
 
 ObjectId.prototype.generate = deprecate(
-  (time: number)=> ObjectId.generate(time),
+  (time: number) => ObjectId.generate(time),
   'Please use the static `ObjectId.generate(time)` instead'
 );
 

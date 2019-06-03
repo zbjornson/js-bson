@@ -71,12 +71,14 @@ const INF_POSITIVE_BUFFER = [
 const EXPONENT_REGEX = /^([-+])?(\d+)?$/;
 
 // Detect if the value is a digit
-function isDigit(value: string): value is '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9' {
+function isDigit(
+  value: string
+): value is '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' {
   return !isNaN(parseInt(value, 10));
 }
 
 // Divide two uint128 values
-function divideu128(value: { parts: number[]}) {
+function divideu128(value: { parts: number[] }) {
   const DIVISOR = Long.fromNumber(1000 * 1000 * 1000);
   let _rem = Long.fromNumber(0);
 
@@ -164,7 +166,6 @@ export class Decimal128 {
    */
   constructor(public readonly bytes: Buffer) {}
 
-
   /**
    * Create a Decimal128 instance from a string representation
    *
@@ -177,7 +178,7 @@ export class Decimal128 {
     let isNegative = false;
     let sawRadix = false;
     let foundNonZero = false;
-  
+
     // Total number of significant digits (no leading or trailing zero)
     let significantDigits = 0;
     // Total number of significand digits read
@@ -188,7 +189,7 @@ export class Decimal128 {
     let radixPosition = 0;
     // The index of the first non-zero in *str*
     let firstNonZero = 0;
-  
+
     // Digits Array
     const digits = [0];
     // The number of digits in digits
@@ -199,7 +200,7 @@ export class Decimal128 {
     let firstDigit = 0;
     // The index of the last digit
     let lastDigit = 0;
-  
+
     // Exponent
     let exponent = 0;
     // loop index over array
@@ -210,55 +211,55 @@ export class Decimal128 {
     let significandLow = Long.fromNumber(0);
     // The biased exponent
     let biasedExponent = 0;
-  
+
     // Read index
     let index = 0;
-  
+
     // Naively prevent against REDOS attacks.
     // TODO: implementing a custom parsing for this, or refactoring the regex would yield
     //       further gains.
     if (string.length >= 7000) {
       throw new TypeError('' + string + ' not a valid Decimal128 string');
     }
-  
+
     // Results
     const stringMatch = string.match(PARSE_STRING_REGEXP);
     const infMatch = string.match(PARSE_INF_REGEXP);
     const nanMatch = string.match(PARSE_NAN_REGEXP);
-  
+
     // Validate the string
     if ((!stringMatch && !infMatch && !nanMatch) || string.length === 0) {
       throw new TypeError('' + string + ' not a valid Decimal128 string');
     }
-  
+
     if (stringMatch) {
       // full_match = stringMatch[0]
       // sign = stringMatch[1]
-  
+
       let unsignedNumber = stringMatch[2];
       // stringMatch[3] is undefined if a whole number (ex "1", 12")
       // but defined if a number w/ decimal in it (ex "1.0, 12.2")
-  
+
       let e = stringMatch[4];
       let expSign = stringMatch[5];
       let expNumber = stringMatch[6];
-  
+
       // they provided e, but didn't give an exponent number. for ex "1e"
       if (e && expNumber === undefined) invalidErr(string, 'missing exponent power');
-  
+
       // they provided e, but didn't give a number before it. for ex "e1"
       if (e && unsignedNumber === undefined) invalidErr(string, 'missing exponent base');
-  
+
       if (e === undefined && (expSign || expNumber)) {
         invalidErr(string, 'missing e before exponent');
       }
     }
-  
+
     // Get the negative or positive sign
     if (string[index] === '+' || string[index] === '-') {
       isNegative = string[index++] === '-';
     }
-  
+
     // Check if user passed Infinity or NaN
     if (!isDigit(string[index]) && string[index] !== '.') {
       if (string[index] === 'i' || string[index] === 'I') {
@@ -267,62 +268,63 @@ export class Decimal128 {
         return new Decimal128(Buffer.from(NAN_BUFFER));
       }
     }
-  
+
     // Read all the digits
     while (isDigit(string[index]) || string[index] === '.') {
       if (string[index] === '.') {
         if (sawRadix) invalidErr(string, 'contains multiple periods');
-  
+
         sawRadix = true;
         index = index + 1;
         continue;
       }
-  
+
       if (nDigitsStored < 34) {
         if (string[index] !== '0' || foundNonZero) {
           if (!foundNonZero) {
             firstNonZero = nDigitsRead;
           }
-  
+
           foundNonZero = true;
-  
+
           // Only store 34 digits
           digits[digitsInsert++] = parseInt(string[index], 10);
           nDigitsStored = nDigitsStored + 1;
         }
       }
-  
+
       if (foundNonZero) nDigits = nDigits + 1;
       if (sawRadix) radixPosition = radixPosition + 1;
-  
+
       nDigitsRead = nDigitsRead + 1;
       index = index + 1;
     }
-  
-    if (sawRadix && !nDigitsRead) throw new TypeError('' + string + ' not a valid Decimal128 string');
-  
+
+    if (sawRadix && !nDigitsRead)
+      throw new TypeError('' + string + ' not a valid Decimal128 string');
+
     // Read exponent if exists
     if (string[index] === 'e' || string[index] === 'E') {
       // Read exponent digits
       const match = string.substr(++index).match(EXPONENT_REGEX);
-  
+
       // No digits read
       if (!match || !match[2]) return new Decimal128(Buffer.from(NAN_BUFFER));
-  
+
       // Get exponent
       exponent = parseInt(match[0], 10);
-  
+
       // Adjust the index
       index = index + match[0].length;
     }
-  
+
     // Return not a number
     if (string[index]) return new Decimal128(Buffer.from(NAN_BUFFER));
-  
+
     // Done reading input
     // Find first non-zero digit in digits
     firstDigit = 0;
-  
+
     if (!nDigitsStored) {
       firstDigit = 0;
       lastDigit = 0;
@@ -339,23 +341,23 @@ export class Decimal128 {
         }
       }
     }
-  
+
     // Normalization of exponent
     // Correct exponent based on radix position, and shift significand as needed
     // to represent user input
-  
+
     // Overflow prevention
     if (exponent <= radixPosition && radixPosition - exponent > 1 << 14) {
       exponent = EXPONENT_MIN;
     } else {
       exponent = exponent - radixPosition;
     }
-  
+
     // Attempt to normalize the exponent
     while (exponent > EXPONENT_MAX) {
       // Shift exponent to significand and decrease
       lastDigit = lastDigit + 1;
-  
+
       if (lastDigit - firstDigit > MAX_DIGITS) {
         // Check if we have a zero then just hard clamp, otherwise fail
         const digitsString = digits.join('');
@@ -363,12 +365,12 @@ export class Decimal128 {
           exponent = EXPONENT_MAX;
           break;
         }
-  
+
         invalidErr(string, 'overflow');
       }
       exponent = exponent - 1;
     }
-  
+
     while (exponent < EXPONENT_MIN || nDigitsStored < nDigits) {
       // Shift last digit. can only do this if < significant digits than # stored.
       if (lastDigit === 0 && significantDigits < nDigitsStored) {
@@ -376,7 +378,7 @@ export class Decimal128 {
         significantDigits = 0;
         break;
       }
-  
+
       if (nDigitsStored < nDigits) {
         // adjust to match digits not stored
         nDigits = nDigits - 1;
@@ -384,7 +386,7 @@ export class Decimal128 {
         // adjust to round
         lastDigit = lastDigit - 1;
       }
-  
+
       if (exponent < EXPONENT_MAX) {
         exponent = exponent + 1;
       } else {
@@ -397,12 +399,12 @@ export class Decimal128 {
         invalidErr(string, 'overflow');
       }
     }
-  
+
     // Round
     // We've normalized the exponent, but might still need to round.
     if (lastDigit - firstDigit + 1 < significantDigits) {
       let endOfString = nDigitsRead;
-  
+
       // If we have seen a radix point, 'string' is 1 longer than we have
       // documented with ndigits_read, so inc the position of the first nonzero
       // digit and the position that digits are read to.
@@ -415,10 +417,10 @@ export class Decimal128 {
         firstNonZero = firstNonZero + 1;
         endOfString = endOfString + 1;
       }
-  
+
       const roundDigit = parseInt(string[firstNonZero + lastDigit + 1], 10);
       let roundBit = false;
-  
+
       if (roundDigit >= 5) {
         roundBit = true;
         if (roundDigit === 5) {
@@ -431,14 +433,14 @@ export class Decimal128 {
           }
         }
       }
-  
+
       if (roundBit) {
         let dIdx = lastDigit;
-  
+
         for (; dIdx >= 0; dIdx--) {
           if (++digits[dIdx] > 9) {
             digits[dIdx] = 0;
-  
+
             // overflowed most significant digit
             if (dIdx === 0) {
               if (exponent < EXPONENT_MAX) {
@@ -454,13 +456,13 @@ export class Decimal128 {
         }
       }
     }
-  
+
     // Encode significand
     // The high 17 digits of the significand
     significandHigh = Long.fromNumber(0);
     // The low 17 digits of the significand
     significandLow = Long.fromNumber(0);
-  
+
     // read a zero
     if (significantDigits === 0) {
       significandHigh = Long.fromNumber(0);
@@ -469,7 +471,7 @@ export class Decimal128 {
       let dIdx = firstDigit;
       significandLow = Long.fromNumber(digits[dIdx++]);
       significandHigh = new Long(0, 0);
-  
+
       for (; dIdx <= lastDigit; dIdx++) {
         significandLow = significandLow.multiply(Long.fromNumber(10));
         significandLow = significandLow.add(Long.fromNumber(digits[dIdx]));
@@ -477,31 +479,31 @@ export class Decimal128 {
     } else {
       let dIdx = firstDigit;
       significandHigh = Long.fromNumber(digits[dIdx++]);
-  
+
       for (; dIdx <= lastDigit - 17; dIdx++) {
         significandHigh = significandHigh.multiply(Long.fromNumber(10));
         significandHigh = significandHigh.add(Long.fromNumber(digits[dIdx]));
       }
-  
+
       significandLow = Long.fromNumber(digits[dIdx++]);
-  
+
       for (; dIdx <= lastDigit; dIdx++) {
         significandLow = significandLow.multiply(Long.fromNumber(10));
         significandLow = significandLow.add(Long.fromNumber(digits[dIdx]));
       }
     }
-  
+
     const significand = multiply64x2(significandHigh, Long.fromString('100000000000000000'));
     significand.low = significand.low.add(significandLow);
-  
+
     if (lessThan(significand.low, significandLow)) {
       significand.high = significand.high.add(Long.fromNumber(1));
     }
-  
+
     // Biased exponent
     biasedExponent = exponent + EXPONENT_BIAS;
     const dec = { low: Long.fromNumber(0), high: Long.fromNumber(0) };
-  
+
     // Encode combination, exponent, and significand.
     if (
       significand.high
@@ -519,18 +521,18 @@ export class Decimal128 {
       dec.high = dec.high.or(Long.fromNumber(biasedExponent & 0x3fff).shiftLeft(49));
       dec.high = dec.high.or(significand.high.and(Long.fromNumber(0x1ffffffffffff)));
     }
-  
+
     dec.low = significand.low;
-  
+
     // Encode sign
     if (isNegative) {
       dec.high = dec.high.or(Long.fromString('9223372036854775808'));
     }
-  
+
     // Encode into a buffer
     const buffer = Buffer.alloc(16);
     index = 0;
-  
+
     // Encode the low 64 bits of the decimal
     // Encode low bits
     buffer[index++] = dec.low.low & 0xff;
@@ -542,7 +544,7 @@ export class Decimal128 {
     buffer[index++] = (dec.low.high >> 8) & 0xff;
     buffer[index++] = (dec.low.high >> 16) & 0xff;
     buffer[index++] = (dec.low.high >> 24) & 0xff;
-  
+
     // Encode the high 64 bits of the decimal
     // Encode low bits
     buffer[index++] = dec.high.low & 0xff;
@@ -554,11 +556,10 @@ export class Decimal128 {
     buffer[index++] = (dec.high.high >> 8) & 0xff;
     buffer[index++] = (dec.high.high >> 16) & 0xff;
     buffer[index++] = (dec.high.high >> 24) & 0xff;
-  
+
     // Return the new Decimal128
     return new Decimal128(buffer);
   }
-
 
   /**
    * Create a string representation of the raw Decimal128 value
@@ -601,7 +602,7 @@ export class Decimal128 {
     // the most signifcant significand bits (50-46)
     let significand_msb;
     // temporary storage for significand decoding
-    let significand128: {parts: number[]} = { parts: new Array(4) };
+    let significand128: { parts: number[] } = { parts: new Array(4) };
     // indexing variables
     let j, k;
 
@@ -787,14 +788,14 @@ export class Decimal128 {
 
   toJSON() {
     return { $numberDecimal: this.toString() };
-  };
-  
+  }
+
   /**
    * @ignore
    */
   toExtendedJSON() {
     return { $numberDecimal: this.toString() };
-  };
+  }
 
   /**
    * @ignore

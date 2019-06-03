@@ -179,12 +179,21 @@ type Stringify1 = Parameters<typeof JSON.stringify>[1];
 type Stringify2 = Parameters<typeof JSON.stringify>[2];
 
 export function stringify(value: Stringify0, options?: EJSONStringifyOptions): string;
-export function stringify(value: Stringify0, replacer: Stringify1, options?: EJSONStringifyOptions): string;
-export function stringify(value: Stringify0, replacer: Stringify1, space: Stringify2, options?: EJSONStringifyOptions): string;
 export function stringify(
   value: Stringify0,
-  replacer?: Stringify1|EJSONStringifyOptions,
-  space?: Stringify2|EJSONStringifyOptions,
+  replacer: Stringify1,
+  options?: EJSONStringifyOptions
+): string;
+export function stringify(
+  value: Stringify0,
+  replacer: Stringify1,
+  space: Stringify2,
+  options?: EJSONStringifyOptions
+): string;
+export function stringify(
+  value: Stringify0,
+  replacer?: Stringify1 | EJSONStringifyOptions,
+  space?: Stringify2 | EJSONStringifyOptions,
   options?: EJSONStringifyOptions
 ) {
   if (typeof space === 'object' && space != null) {
@@ -214,7 +223,7 @@ export function stringify(
  * @return {object}
  */
 export function serialize(bson: any, options?: EJSONStringifyOptions) {
-  options = options || {} as EJSONStringifyOptions;
+  options = options || ({} as EJSONStringifyOptions);
   return JSON.parse(stringify(bson, options));
 }
 
@@ -227,7 +236,7 @@ export function serialize(bson: any, options?: EJSONStringifyOptions) {
  * @return {object}
  */
 export function deserialize(ejson: any, options?: EJSONParseOptions) {
-  options = options || {} as EJSONParseOptions;
+  options = options || ({} as EJSONParseOptions);
   return parse(JSON.stringify(ejson), options);
 }
 
@@ -336,7 +345,12 @@ function serializeDocument(doc: unknown, options: EJSONStringifyOptions) {
     if (bsontype === 'Code' && (_doc as any).scope) {
       _doc = new Code((_doc as any).code, serializeValue((_doc as any).scope, options));
     } else if (bsontype === 'DBRef' && (_doc as any).oid) {
-      _doc = new DBRef((_doc as any).collection, serializeValue((_doc as any).oid, options), (_doc as any).db, (_doc as any).fields);
+      _doc = new DBRef(
+        (_doc as any).collection,
+        serializeValue((_doc as any).oid, options),
+        (_doc as any).db,
+        (_doc as any).fields
+      );
     }
 
     return (_doc as any).toExtendedJSON(options);

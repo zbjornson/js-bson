@@ -52,7 +52,7 @@ export class DBRef {
    * @ignore
    */
   toExtendedJSON() {
-    let o : Record<string, any> = {
+    let o: Record<string, any> = {
       $ref: this.collection,
       $id: this.oid
     };

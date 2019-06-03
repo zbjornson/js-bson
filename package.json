@@ -25,6 +25,8 @@
   "devDependencies": {
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "benchmark": "^2.1.4",
     "chai": "^4.2.0",
     "dmd-clear": "^0.1.2",
@@ -39,6 +41,7 @@
     "karma-rollup-preprocessor": "^6.1.0",
     "mocha": "^5.2.0",
     "prettier": "^1.15.1",
+    "rimraf": "^2.6.3",
     "rollup": "^0.67.0",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.2.0",
@@ -47,7 +50,7 @@
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "standard-version": "^4.4.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.4.5"
   },
   "config": {
     "native": false
@@ -67,8 +70,9 @@
     "test-node": "node --throw-deprecation node_modules/.bin/_mocha ./test/node",
     "test-browser": "npm run-script build && node --throw-deprecation node_modules/.bin/karma start",
     "build": "rollup -c",
-    "lint": "eslint lib test",
-    "format": "prettier --print-width 100 --tab-width 2 --single-quote --write 'test/**/*.js' 'lib/**/*.js'",
+    "build-ts": "rimraf lib && tsc",
+    "lint": "eslint src/**.ts test/**.js",
+    "format": "prettier --print-width 100 --tab-width 2 --single-quote --write 'test/**/*.js' 'src/**/*.ts'",
     "coverage": "istanbul cover _mocha -- --recursive --ui tdd test/node",
     "prepublishOnly": "npm run build",
     "release": "standard-version -i HISTORY.md"

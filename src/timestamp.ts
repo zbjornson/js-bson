@@ -11,9 +11,9 @@ import { Long } from './long';
 // https://github.com/microsoft/TypeScript/issues/4628
 // @ts-ignore
 export class Timestamp extends Long {
-  constructor(low: number, high: number)
+  constructor(low: number, high: number);
   constructor(low: _Long);
-  constructor(low: number|_Long, high?: number) {
+  constructor(low: number | _Long, high?: number) {
     if (Long.isLong(low)) {
       super(low.low, low.high, true);
     } else {

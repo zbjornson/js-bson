@@ -15,7 +15,6 @@ function insecureRandomBytes(size: number): Uint8Array {
 declare const window: any;
 
 let randomBytes = insecureRandomBytes;
-/* global window */
 if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
   randomBytes = size => window.crypto.getRandomValues(new Uint8Array(size));
 } else {
